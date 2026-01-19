@@ -521,3 +521,102 @@ hr,
     font-size:18px;
   }
 }
+/* -------------------------------
+   🥚 EASTER EGGS (robust)
+   - Konami (arrows + B A)
+   - Glow Burst: press "G"
+   - Neon Toggle: press "N"
+-------------------------------- */
+(function () {
+  const isTypingInField = () => {
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = (el.tagName || "").toLowerCase();
+    return tag === "input" || tag === "textarea" || el.isContentEditable;
+  };
+
+  // --- helpers
+  let neonInterval = null;
+
+  function setAccent(a, b) {
+    document.documentElement.style.setProperty("--accent", a);
+    document.documentElement.style.setProperty("--accent2", b);
+  }
+
+  function startNeonCycle() {
+    const accents = [
+      ["#00F0FF", "#4DEEFF"],
+      ["#A855F7", "#E879F9"],
+      ["#22C55E", "#86EFAC"],
+      ["#00F0FF", "#4DEEFF"],
+    ];
+    let i = 0;
+    stopNeonCycle();
+    neonInterval = setInterval(() => {
+      const [a, b] = accents[i % accents.length];
+      setAccent(a, b);
+      i++;
+    }, 420);
+  }
+
+  function stopNeonCycle() {
+    if (neonInterval) clearInterval(neonInterval);
+    neonInterval = null;
+  }
+
+  function pulseBurst(ms = 8000) {
+    document.body.classList.add("easter-glow");
+    startNeonCycle();
+    window.clearTimeout(pulseBurst._t);
+    pulseBurst._t = window.setTimeout(() => {
+      document.body.classList.remove("easter-glow");
+      stopNeonCycle();
+    }, ms);
+  }
+
+  function toggleNeon() {
+    const on = document.body.classList.toggle("easter-neon");
+    if (on) startNeonCycle();
+    else stopNeonCycle();
+  }
+
+  // --- Konami listener (more tolerant)
+  const konami = [
+    "arrowup","arrowup",
+    "arrowdown","arrowdown",
+    "arrowleft","arrowright",
+    "arrowleft","arrowright",
+    "b","a"
+  ];
+  let k = 0;
+  let locked = false;
+
+  window.addEventListener("keydown", (e) => {
+    if (isTypingInField()) return; // don't hijack typing in forms
+    const key = (e.key || "").toLowerCase();
+
+    // quick hotkeys
+    if (key === "g") { pulseBurst(8000); return; }   // instant test
+    if (key === "n") { toggleNeon(); return; }       // toggle mode
+
+    if (locked) return;
+
+    const expected = konami[k];
+    if (key === expected) {
+      k++;
+      if (k === konami.length) {
+        k = 0;
+        locked = true;
+        pulseBurst(9000);
+        // unlock after it ends
+        setTimeout(() => { locked = false; }, 9200);
+      }
+    } else {
+      k = 0;
+    }
+  });
+
+  // Debug: prove the egg script loaded
+  console.log("🥚 Easter eggs loaded: press G (burst) or N (toggle), or Konami.");
+})();
+
