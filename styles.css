@@ -1,94 +1,242 @@
+/* ======================================================
+   KRISI.SITE — CYBER GLASS MASTER UI (PRODUCTION)
+   Astra + Elementor
+   ====================================================== */
+
+/* ======================
+   COLOR SYSTEM
+====================== */
 :root{
-  --bg:#000;
+  --bg:#000000;
   --text:#E6F1FF;
   --muted:#9FB3C8;
+
   --cyan:#00F0FF;
   --cyan2:#4DEEFF;
 
-  /* accent that JS can update */
+  /* Accent variables (JS/section classes can update) */
   --accent:#00F0FF;
   --accent2:#4DEEFF;
 }
 
 *{ box-sizing:border-box; }
-html,body{ height:100%; }
-body{
-  margin:0;
-  background:var(--bg);
+
+html, body{
+  height:100%;
+  background:#000 !important;
   color:var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
   overflow-x:hidden;
 }
 
-a{ color:inherit; text-decoration:none; }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
 
-/* Fix orange selection */
+/* Links */
+a{ color:inherit; text-decoration:none !important; }
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+
+/* Fix “orange selection” highlight + remove underline-on-select */
 ::selection{ background: rgba(0,240,255,.35); color: var(--text); }
 ::-moz-selection{ background: rgba(0,240,255,.35); color: var(--text); }
 a::selection, a *::selection{ text-decoration:none !important; }
 
-.muted{ color:var(--muted); }
-
-/* Demo layout */
-.demo-header{
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background:#000;
-  border-bottom:1px solid rgba(0,240,255,.15);
+/* ======================
+   FORCE ALL PAGES BLACK
+====================== */
+#page,
+#content,
+.site,
+.site-content,
+.ast-container,
+.ast-container-fluid,
+.site-main,
+.content-area{
+  background:#000 !important;
 }
-.demo-nav{
+
+.elementor-section,
+.elementor-container,
+.e-con,
+.e-con-inner{
+  background:transparent !important;
+}
+
+/* ======================
+   FULL-WIDTH SECTIONS (no cut-off glow)
+====================== */
+.elementor-section.elementor-section-boxed > .elementor-container,
+.e-con.e-con-boxed,
+.ast-container,
+.ast-container-fluid{
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.elementor-section.elementor-section-boxed,
+.e-con.e-con-boxed{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Don’t clip glow by default */
+#page, #content, .site, .site-content,
+.elementor-section, .e-con, .e-con-inner{
+  overflow: visible !important;
+}
+
+/* Only these should clip their own glow */
+.ambient-glow,
+.wave-glow{
+  overflow: hidden !important;
+}
+
+/* ======================
+   HEADER — PURE BLACK
+====================== */
+.ast-above-header-bar,
+.ast-primary-header-bar,
+.ast-header-break-point,
+.ast-above-header-bar .ast-container,
+.ast-primary-header-bar .ast-container{
+  background:#000 !important;
+  backdrop-filter:none !important;
+  border-bottom:1px solid rgba(0,240,255,.12) !important;
+  box-shadow: 0 0 18px rgba(0,240,255,.10);
+}
+
+/* ======================
+   MENU LAYOUT
+====================== */
+.ast-above-header-bar .site-header-above-section-center{
+  width:100%;
+}
+
+.ast-above-header-bar .site-header-above-section-center ul{
   display:flex;
   justify-content:center;
-  gap:48px;
-  padding:18px 16px;
+  align-items:center;
+  gap:90px;
 }
-.demo-nav a{
+
+.ast-above-header-bar .site-header-above-section-center li > a{
+  font-size:24px;
+  line-height:1;
+}
+
+/* Kill underline effects everywhere */
+.main-navigation a::after,
+.nav-menu a::after,
+.ast-above-header-bar a::after,
+.ast-primary-header-bar a::after{
+  display:none !important;
+}
+
+/* ======================
+   MENU — CYAN GLASS PILL
+====================== */
+.ast-above-header-bar a,
+.ast-primary-header-bar a,
+.main-navigation a{
   display:inline-flex;
-  padding:10px 22px;
+  align-items:center;
+  justify-content:center;
+  padding:12px 26px;
   border-radius:999px;
+  color:var(--text) !important;
+  background:transparent;
   border:1px solid transparent;
-  transition: background .25s ease, box-shadow .25s ease, transform .15s ease, color .2s ease;
+  position:relative;
+  transition:
+    background .25s ease,
+    box-shadow .25s ease,
+    transform .15s ease,
+    color .2s ease;
 }
-.demo-nav a:hover{
+
+/* Glass sheen */
+.ast-above-header-bar a::before,
+.ast-primary-header-bar a::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  opacity:0;
+  background:linear-gradient(140deg,
+    rgba(255,255,255,.35),
+    rgba(255,255,255,.08) 40%,
+    transparent 65%);
+  transition:opacity .25s ease;
+  pointer-events:none;
+}
+
+/* Hover */
+.ast-above-header-bar a:hover,
+.ast-primary-header-bar a:hover{
   background:linear-gradient(135deg,var(--cyan),var(--cyan2));
-  color:#000;
-  box-shadow:0 0 14px rgba(0,240,255,.95), 0 0 40px rgba(0,240,255,.55);
+  color:#000 !important;
+  box-shadow:
+    0 0 14px rgba(0,240,255,.95),
+    0 0 40px rgba(0,240,255,.55);
   transform:translateY(-1px) scale(1.05);
 }
+.ast-above-header-bar a:hover::before{ opacity:.6; }
 
-.demo-wrap{ max-width:1100px; margin:0 auto; padding:32px 16px 80px; }
-
-.demo-hero{
-  text-align:center;
-  padding:64px 16px 40px;
-}
-.hero-title{
-  margin:0 0 10px;
-  font-size:84px;
-  letter-spacing:2px;
-  color: var(--cyan);
-  text-shadow: 0 0 16px rgba(0,240,255,.9), 0 0 64px rgba(0,240,255,.65);
+/* Active breathing glow */
+@keyframes breatheGlow{
+  0%{ box-shadow:0 0 14px rgba(0,240,255,.6); }
+  50%{ box-shadow:0 0 36px rgba(0,240,255,1); }
+  100%{ box-shadow:0 0 14px rgba(0,240,255,.6); }
 }
 
-.demo-section{ padding:46px 0; }
-.demo-section h2{
-  margin:0 0 18px;
-  font-size:34px;
+.current-menu-item > a,
+.current_page_item > a{
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  color:#000 !important;
+  animation:breatheGlow 2.8s ease-in-out infinite;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap:18px;
-}
-@media (max-width: 900px){
-  .grid{ grid-template-columns: 1fr; }
-  .hero-title{ font-size:56px; }
+/* ======================
+   HERO GLOW TEXT
+====================== */
+.hero-title .accent{
+  color:var(--cyan) !important;
+  text-shadow:
+    0 0 16px rgba(0,240,255,.9),
+    0 0 48px rgba(0,240,255,.7);
+  animation:heroPulse 2.2s ease-in-out infinite;
 }
 
-/* Ambient glow */
-.ambient-glow{ position:relative; overflow:hidden; }
+@keyframes heroPulse{
+  0%,100%{ filter:brightness(1); }
+  50%{ filter:brightness(1.25); }
+}
+
+/* If you apply .proximity-heading via JS */
+.proximity-heading{
+  --p: 0; /* 0..1 */
+  transition: filter .12s ease, text-shadow .12s ease;
+  filter: brightness(calc(1 + (var(--p) * 0.35)));
+  text-shadow:
+    0 0 calc(8px  + (var(--p) * 18px)) rgba(0,240,255, calc(.25 + (var(--p) * .55))),
+    0 0 calc(20px + (var(--p) * 50px)) rgba(0,240,255, calc(.15 + (var(--p) * .45))),
+    0 0 calc(40px + (var(--p) * 90px)) rgba(0,240,255, calc(.06 + (var(--p) * .28)));
+}
+
+/* ======================
+   AMBIENT GLOW SECTION
+   Class: ambient-glow
+====================== */
+.ambient-glow{
+  position:relative;
+  background:#000 !important;
+}
+
 .ambient-glow::before{
   content:"";
   position:absolute;
@@ -100,57 +248,80 @@ a::selection, a *::selection{ text-decoration:none !important; }
   animation:ambientFloat 28s ease-in-out infinite alternate;
   pointer-events:none;
 }
+
 @keyframes ambientFloat{
   from{ transform:translate(-3%,-2%) scale(1); opacity:.6; }
   to{ transform:translate(3%,2%) scale(1.15); opacity:1; }
 }
-.ambient-glow > *{ position:relative; z-index:1; }
 
-/* Glass cards */
-.glass-card{
+.ambient-glow > *{
   position:relative;
-  overflow:hidden;
-  padding:22px 18px;
-  border-radius:18px;
-  background: rgba(6,14,18,.78);
-  border:1px solid rgba(0,240,255,.18);
-  box-shadow: 0 14px 34px rgba(0,0,0,.55);
-  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
-  min-height: 160px;
+  z-index:1;
 }
+
+/* Accent classes (NO orange) */
+.accent-cyan   { --accent:#00F0FF; --accent2:#4DEEFF; }
+.accent-purple { --accent:#A855F7; --accent2:#E879F9; }
+.accent-green  { --accent:#22C55E; --accent2:#86EFAC; }
+
+/* Optional subtle ambient tint per section using accent */
+.ambient-glow::before{
+  background:
+    radial-gradient(circle at 25% 35%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 55%),
+    radial-gradient(circle at 75% 65%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%) !important;
+}
+
+/* ======================
+   GLASS CARDS
+   Class: glass-card
+====================== */
+.glass-card{
+  background:rgba(6,14,18,.78) !important;
+  backdrop-filter:blur(16px) saturate(1.1);
+  -webkit-backdrop-filter:blur(16px) saturate(1.1);
+  border-radius:18px !important;
+  border:1px solid rgba(0,240,255,.14) !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.55);
+  transition:
+    transform .35s cubic-bezier(.2,.8,.2,1),
+    box-shadow .35s ease,
+    border-color .35s ease;
+}
+
 .glass-card:hover{
   transform:translateY(-8px) scale(1.02);
-  border-color: rgba(0,240,255,.55);
-  box-shadow: 0 22px 50px rgba(0,0,0,.7), 0 0 36px rgba(0,240,255,.35);
-}
-.star{ color:#b0002e; font-size:32px; line-height:1; margin-bottom:10px; }
-.glass-card h3{ margin:0 0 6px; font-size:22px; color:#ff3860; }
-.glass-card p{ margin:0; color: rgba(230,241,255,.75); }
-
-/* Footer */
-.site-footer{
-  padding:26px 16px 44px;
-  border-top:1px solid rgba(0,240,255,.15);
-}
-.footer-row{
-  display:flex;
-  justify-content:center;
-  gap:26px;
-  font-size:22px;
-}
-.site-footer a{
-  width:40px; height:40px;
-  display:grid; place-items:center;
-  border-radius:12px;
-  position:relative;
-  transition: transform .25s ease, filter .25s ease;
-}
-.site-footer a:hover{
-  transform:scale(1.25);
-  filter: drop-shadow(0 0 16px rgba(0,240,255,.9));
+  border-color:rgba(0,240,255,.55) !important;
+  box-shadow:
+    0 22px 50px rgba(0,0,0,.7),
+    0 0 36px rgba(0,240,255,.35);
 }
 
-/* ========== Cursor glow ========== */
+/* Click burst effect (JS inserts .click-burst) */
+.click-burst{
+  position:absolute;
+  width: 14px; height: 14px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  pointer-events:none;
+  z-index: 5;
+  background: radial-gradient(circle,
+    rgba(0,240,255,.95) 0%,
+    rgba(0,240,255,.45) 35%,
+    rgba(0,0,0,0) 72%
+  );
+  filter:
+    drop-shadow(0 0 14px rgba(0,240,255,.95))
+    drop-shadow(0 0 44px rgba(0,240,255,.55));
+  animation: burst 520ms ease-out forwards;
+}
+@keyframes burst{
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(18); }
+}
+
+/* ======================
+   CURSOR GLOW + PARTICLES
+====================== */
 .cursor-glow{
   position: fixed;
   width: 44px;
@@ -187,6 +358,7 @@ a::selection, a *::selection{ text-decoration:none !important; }
   opacity:.9;
   animation: cursorRingPulse 1.7s ease-in-out infinite;
 }
+
 .cursor-glow::after{
   content:"";
   position:absolute;
@@ -200,12 +372,13 @@ a::selection, a *::selection{ text-decoration:none !important; }
   box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 90%, transparent);
   opacity: .95;
 }
+
 @keyframes cursorRingPulse{
   0%,100% { transform: scale(1); opacity:.75; }
   50%     { transform: scale(1.08); opacity:1; }
 }
 
-/* Cursor particles */
+/* Trailing particles */
 .cursor-particle{
   position: fixed;
   width: 7px;
@@ -215,101 +388,27 @@ a::selection, a *::selection{ text-decoration:none !important; }
   z-index: 9999998;
   left: 0;
   top: 0;
-
   background: radial-gradient(circle,
     color-mix(in srgb, var(--accent) 85%, white 15%) 0%,
     rgba(0,0,0,0) 70%
   );
-
   filter: drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 75%, transparent));
   transform: translate(-50%, -50%);
   opacity: 0.95;
   mix-blend-mode: screen;
-
   animation: particleFade 620ms ease-out forwards;
 }
+
 @keyframes particleFade{
   0%   { opacity: 0.95; transform: translate(-50%,-50%) scale(1); }
   100% { opacity: 0;    transform: translate(-50%,-50%) scale(0.2); }
 }
 
-/* Accent classes (NO orange) */
-.accent-cyan   { --accent:#00F0FF; --accent2:#4DEEFF; }
-.accent-purple { --accent:#A855F7; --accent2:#E879F9; }
-.accent-green  { --accent:#22C55E; --accent2:#86EFAC; }
-
-/* Heading proximity driven by JS via --p */
-.proximity-heading{
-  --p: 0; /* 0..1 */
-  transition: filter .12s ease, text-shadow .12s ease;
-  filter: brightness(calc(1 + (var(--p) * 0.35)));
-  text-shadow:
-    0 0 calc(8px  + (var(--p) * 18px)) rgba(0,240,255, calc(.25 + (var(--p) * .55))),
-    0 0 calc(20px + (var(--p) * 50px)) rgba(0,240,255, calc(.15 + (var(--p) * .45))),
-    0 0 calc(40px + (var(--p) * 90px)) rgba(0,240,255, calc(.06 + (var(--p) * .28)));
-}
-
-/* Click burst (cards) */
-.click-burst{
-  position:absolute;
-  width: 14px; height: 14px;
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-  pointer-events:none;
-  z-index: 5;
-  background: radial-gradient(circle,
-    rgba(0,240,255,.95) 0%,
-    rgba(0,240,255,.45) 35%,
-    rgba(0,0,0,0) 72%
-  );
-  filter:
-    drop-shadow(0 0 14px rgba(0,240,255,.95))
-    drop-shadow(0 0 44px rgba(0,240,255,.55));
-  animation: burst 520ms ease-out forwards;
-}
-@keyframes burst{
-  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(18); }
-}
-
-/* Footer orbit */
-.orbit-layer{
-  position:absolute;
-  left:50%; top:50%;
-  width: 34px; height: 34px;
-  transform: translate(-50%, -50%);
-  pointer-events:none;
-  opacity: 0;
-  transition: opacity .2s ease;
-  z-index: 3;
-}
-.site-footer a:hover .orbit-layer{ opacity: 1; }
-
-.orbit-dot{
-  position:absolute;
-  left:50%; top:50%;
-  width: 6px; height: 6px;
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-  background: rgba(0,240,255,.95);
-  filter: drop-shadow(0 0 10px rgba(0,240,255,.95));
-}
-.orbit-spin{
-  position:absolute;
-  inset:0;
-  animation: orbitSpin 1.25s linear infinite;
-}
-.orbit-spin:nth-child(2){ animation-duration: 1.55s; }
-.orbit-spin:nth-child(3){ animation-duration: 1.95s; }
-.orbit-spin .orbit-dot{ transform: translate(-50%, -50%) translateX(16px); }
-
-@keyframes orbitSpin{
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* Wave glow (CSS-only) */
-.wave-glow{ position: relative; overflow:hidden; }
+/* ======================
+   WAVE GLOW (CSS-only)
+   Class: wave-glow
+====================== */
+.wave-glow{ position: relative; }
 .wave-glow::after{
   content:"";
   position:absolute;
@@ -333,138 +432,92 @@ a::selection, a *::selection{ text-decoration:none !important; }
   100% { transform: translateX(-30%) rotate(8deg); }
 }
 
-/* Magnetic hint */
-.magnetic{ will-change: transform; transform: translate3d(0,0,0); }
-
-/* =========================================
-   FULL-WIDTH SECTIONS (no cut-off glow)
-   ========================================= */
-
-/* Make Elementor containers truly edge-to-edge */
-.elementor-section.elementor-section-boxed > .elementor-container,
-.e-con.e-con-boxed,
-.ast-container,
-.ast-container-fluid{
-  max-width: 100% !important;
-  width: 100% !important;
-}
-
-/* Remove side padding that can visually "crop" the glow */
-.elementor-section.elementor-section-boxed,
-.e-con.e-con-boxed{
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-/* If a parent is clipping glow, let it show */
-#page, #content, .site, .site-content,
-.elementor-section, .e-con, .e-con-inner{
-  overflow: visible !important;
-}
-
-/* If you WANT glow contained within the section, keep overflow hidden only on the section itself */
-.ambient-glow,
-.wave-glow{
-  overflow: hidden !important;
-}
-
-
-/* =========================================
-   SMOOTHER LINES (less sharp, more cyber)
-   ========================================= */
-
-/* Global thin lines / dividers look softer */
+/* ======================
+   SMOOTHER LINES
+====================== */
 hr,
-.elementor-divider-separator,
-.ast-header-break-point,
-.ast-above-header-bar,
-.ast-primary-header-bar{
+.elementor-divider-separator{
   border-color: rgba(0,240,255,.10) !important;
 }
 
-/* Any custom line you have (like a top line) */
 .line, .divider, .separator{
   opacity: .65;
   filter: blur(.35px);
 }
 
-/* If you used a pseudo element line anywhere, this helps soften it */
-.elementor-section::before,
-.elementor-section::after{
-  filter: blur(.6px);
+/* ======================
+   MAGNETIC TARGET
+====================== */
+.magnetic{
+  will-change: transform;
+  transform: translate3d(0,0,0);
 }
 
-/* Smooth out header bottom line specifically */
-.ast-above-header-bar,
-.ast-primary-header-bar{
-  border-bottom: 1px solid rgba(0,240,255,.12) !important;
-  box-shadow: 0 0 18px rgba(0,240,255,.10);
-}
-
-/* Optional: soften glass-card border slightly */
-.glass-card{
-  border-color: rgba(0,240,255,.14) !important;
-}
-/* =========================================
-   FOOTER FIX — center icons in a horizontal row
-   Works for Astra + Elementor
-   ========================================= */
-
-/* 1) Make the footer area a flex row + centered */
-.site-footer,
-.site-footer .ast-container,
-.site-footer .ast-footer-overlay,
-.site-footer .elementor-container,
-.site-footer .elementor-widget-container{
-  width: 100% !important;
-}
-
-/* 2) Target common footer link groups and force horizontal layout */
-.site-footer .footer-row,
-.site-footer .elementor-social-icons-wrapper,
-.site-footer .elementor-social-icons,
-.site-footer .elementor-icon-list-items,
-.site-footer .wp-block-social-links,
-.site-footer .social-icons,
-.site-footer .ast-social-icons,
-.site-footer .footer-social{
+/* ======================
+   ASTRA FOOTER SOCIAL — FIX STACKING
+====================== */
+#colophon .ast-footer-social-wrap,
+#colophon .ast-footer-social-1-wrap,
+#colophon .footer-social-inner-wrap.element-social-inner-wrap{
   display: flex !important;
   flex-direction: row !important;
   justify-content: center !important;
   align-items: center !important;
-  gap: 22px !important;
   flex-wrap: wrap !important;
+  gap: 22px !important;
+  width: 100% !important;
   margin: 0 auto !important;
   padding: 18px 16px !important;
 }
 
-/* 3) If the icons are inside list items, stop them being block-stacked */
-.site-footer .elementor-icon-list-item,
-.site-footer .wp-block-social-link,
-.site-footer li{
+#colophon a.ast-builder-social-element{
   display: inline-flex !important;
-}
-
-/* 4) Make each icon link a neat square and remove weird offsets */
-.site-footer a{
-  display: inline-flex !important;
-  justify-content: center !important;
   align-items: center !important;
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 14px !important;
+  justify-content: center !important;
+
+  width: 46px !important;
+  height: 46px !important;
+
   margin: 0 !important;
+  padding: 0 !important;
+
+  border-radius: 14px !important;
+  background: rgba(6,14,18,.55) !important;
+  border: 1px solid rgba(0,240,255,.18) !important;
+
+  transition: transform .25s ease, filter .25s ease, box-shadow .25s ease;
 }
 
-/* 5) Fix cases where the container is set to column */
-.site-footer .elementor-column,
-.site-footer .elementor-widget-wrap,
-.site-footer .e-con-inner{
-  flex-direction: row !important;
+#colophon a.ast-builder-social-element svg{
+  width: 22px !important;
+  height: 22px !important;
+  display: block !important;
+}
+
+#colophon a.ast-builder-social-element:hover{
+  transform: translateY(-2px) scale(1.12);
+  box-shadow:
+    0 0 18px rgba(0,240,255,.55),
+    0 0 45px rgba(0,240,255,.25);
+  filter: drop-shadow(0 0 14px rgba(0,240,255,.75));
+}
+
+#colophon .ast-builder-layout-element.ast-flex{
   justify-content: center !important;
 }
 
-/* Optional: keep footer line subtle and centered content */
-.site-footer{
-  border-top: 1px solid rgba(0,240,255,.12) !important;
+/* ======================
+   MOBILE TUNING
+====================== */
+@media(max-width:768px){
+  .glass-card:hover{ transform:none !important; }
+
+  .ast-above-header-bar .site-header-above-section-center ul{
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .ast-above-header-bar .site-header-above-section-center li > a{
+    font-size:18px;
+  }
 }
