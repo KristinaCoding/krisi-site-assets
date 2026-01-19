@@ -667,3 +667,25 @@ header, main, footer{
 .bg-orbs{
   z-index: 1 !important;
 }
+/* ======================================
+   FIX: Make Elementor text readable
+====================================== */
+
+.elementor-text-editor,
+.elementor-text-editor *,
+.elementor-widget-text-editor,
+.elementor-widget-text-editor *,
+.elementor-heading-title,
+p, li, span{
+  color: rgba(230,241,255,0.92) !important;
+  text-shadow: 0 0 6px rgba(0,240,255,.12);
+}
+/* Soft glass background for long text blocks */
+.elementor-text-editor{
+  background: rgba(6,14,18,.55);
+  border: 1px solid rgba(0,240,255,.12);
+  border-radius: 16px;
+  padding: 22px;
+  backdrop-filter: blur(6px);
+}
+
