@@ -339,7 +339,7 @@
   -------------------------------- */
   whenReady(() => {
     // Optional fades (keep if you like)
-    // initPageFades();
+    initPageFades();
 
     initSectionAccentShift();
     initMagneticPull();
