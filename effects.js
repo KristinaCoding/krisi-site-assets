@@ -736,4 +736,266 @@
   });
 })();
 
+/* =========================================================
+   KRISI.SITE — ULTRA UPGRADES PACK (ALL)
+   ✅ Scroll glow parallax
+   ✅ Section reveal animations
+   ✅ Neon button hover physics
+   ✅ Floating background particles (lightweight)
+   ✅ Subtle sound FX (optional toggle)
+   ✅ Page transition glow
+========================================================= */
+(function () {
+  "use strict";
+
+  const isMobileish = () => window.matchMedia("(max-width: 768px)").matches;
+  const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const isTypingInField = () => {
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = (el.tagName || "").toLowerCase();
+    return tag === "input" || tag === "textarea" || el.isContentEditable;
+  };
+
+  /* -------------------------------
+     A) Subtle Sound FX (OPTIONAL)
+     Toggle with key: S
+     (stored in localStorage)
+  -------------------------------- */
+  const SFX_KEY = "krisi_sfx_on";
+  let sfxOn = localStorage.getItem(SFX_KEY) === "1";
+  let audioCtx = null;
+
+  function blip(freqA = 280, freqB = 820, dur = 0.14, gain = 0.04) {
+    if (!sfxOn || reducedMotion()) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = audioCtx.currentTime;
+
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      const f = audioCtx.createBiquadFilter();
+
+      o.type = "triangle";
+      o.frequency.setValueAtTime(freqA, t0);
+      o.frequency.exponentialRampToValueAtTime(freqB, t0 + dur);
+
+      f.type = "lowpass";
+      f.frequency.setValueAtTime(900, t0);
+      f.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
+
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(gain, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+      o.connect(f); f.connect(g); g.connect(audioCtx.destination);
+
+      o.start(t0);
+      o.stop(t0 + dur + 0.02);
+    } catch (_) {}
+  }
+
+  function initSfxToggle() {
+    window.addEventListener("keydown", (e) => {
+      if (isTypingInField()) return;
+      if ((e.key || "").toLowerCase() !== "s") return;
+      sfxOn = !sfxOn;
+      localStorage.setItem(SFX_KEY, sfxOn ? "1" : "0");
+      document.body.classList.toggle("sfx-on", sfxOn);
+      blip(220, 520, 0.16, 0.05);
+      console.log("SFX:", sfxOn ? "ON" : "OFF");
+    });
+    document.body.classList.toggle("sfx-on", sfxOn);
+  }
+
+  /* -------------------------------
+     B) Neon Button Hover Physics
+     Adds CSS vars --mx/--my on hover
+  -------------------------------- */
+  function initNeonButtonPhysics() {
+    if (isMobileish() || reducedMotion()) return;
+
+    const selectors = [
+      ".elementor-button",
+      ".wp-block-button__link",
+      ".ast-button",
+      "button",
+      "a.magnetic"
+    ];
+    const buttons = document.querySelectorAll(selectors.join(","));
+    if (!buttons.length) return;
+
+    buttons.forEach((btn) => {
+      if (btn.dataset.neonBound === "1") return;
+      btn.dataset.neonBound = "1";
+      btn.classList.add("neon-physics");
+
+      btn.addEventListener("mousemove", (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+        btn.style.setProperty("--mx", `${x}px`);
+        btn.style.setProperty("--my", `${y}px`);
+      });
+
+      btn.addEventListener("mouseenter", () => blip(260, 520, 0.12, 0.03));
+      btn.addEventListener("click", () => blip(240, 900, 0.10, 0.05));
+    });
+  }
+
+  /* -------------------------------
+     C) Section Reveal Animations
+     Auto-applies to Elementor sections/containers
+  -------------------------------- */
+  function initSectionReveal() {
+    if (reducedMotion()) return;
+
+    const nodes = document.querySelectorAll(
+      ".elementor-section, .e-con, .e-con-inner, .elementor-widget"
+    );
+    if (!nodes.length) return;
+
+    nodes.forEach((el) => el.classList.add("reveal"));
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            en.target.classList.add("reveal-in");
+            io.unobserve(en.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -10% 0px" }
+    );
+
+    nodes.forEach((el) => io.observe(el));
+  }
+
+  /* -------------------------------
+     D) Scroll Glow Parallax
+     Moves the orb layer subtly with scroll
+  -------------------------------- */
+  function initScrollParallax() {
+    if (reducedMotion()) return;
+
+    // Ensure a layer exists (if you already have .bg-orbs, it will reuse it)
+    let orbs = document.querySelector(".bg-orbs");
+    if (!orbs) {
+      orbs = document.createElement("div");
+      orbs.className = "bg-orbs";
+      document.body.appendChild(orbs);
+    }
+
+    let lastY = window.scrollY;
+    let target = 0;
+    let current = 0;
+
+    function onScroll() {
+      lastY = window.scrollY;
+      target = (lastY / Math.max(1, document.body.scrollHeight)) * 60; // 0..60px-ish
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    function loop() {
+      current += (target - current) * 0.08;
+      orbs.style.transform = `translate3d(0, ${-current}px, 0) scale(1.05)`;
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* -------------------------------
+     E) Floating Background Particles (light)
+     Adds gentle drifting dots behind content
+  -------------------------------- */
+  function initFloatingParticles() {
+    if (isMobileish() || reducedMotion()) return;
+
+    if (document.querySelector(".bg-particles")) return;
+
+    const wrap = document.createElement("div");
+    wrap.className = "bg-particles";
+    document.body.appendChild(wrap);
+
+    const count = 18;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement("span");
+      p.className = "bg-particle";
+
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const s = 0.6 + Math.random() * 1.2;
+      const d = 10 + Math.random() * 18;
+      const o = 0.15 + Math.random() * 0.25;
+
+      p.style.left = x + "vw";
+      p.style.top = y + "vh";
+      p.style.opacity = o.toFixed(2);
+      p.style.transform = `scale(${s.toFixed(2)})`;
+      p.style.animationDuration = d.toFixed(1) + "s";
+      p.style.animationDelay = (-Math.random() * d).toFixed(1) + "s";
+
+      wrap.appendChild(p);
+    }
+  }
+
+  /* -------------------------------
+     F) Page Transition Glow
+     Adds a glow overlay and fades out before internal nav
+  -------------------------------- */
+  function initPageTransitionGlow() {
+    if (reducedMotion()) return;
+
+    // Create overlay
+    if (!document.querySelector(".page-transition")) {
+      const ov = document.createElement("div");
+      ov.className = "page-transition";
+      document.body.appendChild(ov);
+      // mark loaded
+      requestAnimationFrame(() => document.body.classList.add("pt-ready"));
+    }
+
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("a");
+      if (!link) return;
+
+      const href = link.getAttribute("href") || "";
+      if (
+        !href ||
+        href.startsWith("#") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        link.target === "_blank" ||
+        e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+      ) return;
+
+      let url;
+      try { url = new URL(href, window.location.href); } catch { return; }
+      if (url.origin !== window.location.origin) return;
+
+      e.preventDefault();
+      document.body.classList.add("pt-leaving");
+      blip(220, 980, 0.12, 0.05);
+
+      setTimeout(() => { window.location.href = url.href; }, 320);
+    });
+  }
+
+  /* -------------------------------
+     BOOT
+  -------------------------------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    initSfxToggle();
+    initNeonButtonPhysics();
+    initSectionReveal();
+    initScrollParallax();
+    initFloatingParticles();
+    initPageTransitionGlow();
+    console.log("✨ Ultra upgrades pack loaded (parallax/reveal/neon/particles/sfx/page glow).");
+  });
+})();
+
 
