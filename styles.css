@@ -554,3 +554,97 @@ body.easter-neon .hero-title{
     0 0 24px color-mix(in srgb, var(--accent) 90%, transparent),
     0 0 80px color-mix(in srgb, var(--accent) 55%, transparent) !important;
 }
+/* =========================================================
+   EXTRA UPGRADES PACK (CSS)
+   - Floating neon orbs background
+   - Scroll particles
+   - Easter modes (boost glow)
+========================================================= */
+
+/* 1) Floating neon orbs background */
+.bg-orbs{
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  z-index: 0; /* behind content */
+  opacity: .55;
+  filter: blur(30px);
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--accent) 28%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 78% 28%, color-mix(in srgb, var(--accent2) 20%, transparent) 0%, transparent 52%),
+    radial-gradient(circle at 32% 78%, rgba(0,240,255,.10) 0%, transparent 58%),
+    radial-gradient(circle at 82% 78%, rgba(168,85,247,.08) 0%, transparent 60%);
+  animation: orbsFloat 18s ease-in-out infinite alternate;
+}
+
+/* Keep actual page content above */
+#page, #content, .site, .site-content, main, header, footer, .elementor{
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes orbsFloat{
+  from{ transform: translate(-2%, -1%) scale(1); opacity:.42; }
+  to  { transform: translate( 2%,  1%) scale(1.08); opacity:.65; }
+}
+
+/* 2) Scroll glow particles */
+.scroll-particle{
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 9999997;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  opacity: .85;
+
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent) 85%, white 15%) 0%,
+    rgba(0,0,0,0) 72%
+  );
+
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 70%, transparent));
+  animation: scrollFade 900ms ease-out forwards;
+}
+
+@keyframes scrollFade{
+  0%   { opacity: .85; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 0;   transform: translate(-50%,-80%) scale(.25); }
+}
+
+/* 3) Easter modes (boost) */
+body.easter-glow,
+body.easter-neon{
+  filter: saturate(1.35) brightness(1.08);
+}
+
+body.easter-glow .cursor-glow,
+body.easter-neon .cursor-glow{
+  filter:
+    drop-shadow(0 0 26px color-mix(in srgb, var(--accent) 95%, transparent))
+    drop-shadow(0 0 90px color-mix(in srgb, var(--accent) 70%, transparent));
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+body.easter-glow .glass-card,
+body.easter-neon .glass-card{
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent) !important;
+  box-shadow:
+    0 0 28px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 90px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+}
+
+body.easter-glow .hero-title,
+body.easter-neon .hero-title{
+  text-shadow:
+    0 0 24px color-mix(in srgb, var(--accent) 90%, transparent),
+    0 0 80px color-mix(in srgb, var(--accent) 55%, transparent) !important;
+}
+
+/* Mobile/perf safety */
+@media (max-width: 768px), (prefers-reduced-motion: reduce){
+  .bg-orbs{ display:none !important; }
+}
