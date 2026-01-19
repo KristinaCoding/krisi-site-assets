@@ -648,3 +648,22 @@ body.easter-neon .hero-title{
 @media (max-width: 768px), (prefers-reduced-motion: reduce){
   .bg-orbs{ display:none !important; }
 }
+/* ==========================
+   DEBUG FIX: CONTENT ALWAYS VISIBLE
+========================== */
+
+/* Make sure main site content sits above visual FX layers */
+#page, #content, .site, .site-content, .site-main,
+.elementor, .elementor-section, .e-con, .e-con-inner,
+header, main, footer{
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* Keep FX layers behind content */
+.cursor-glow,
+.cursor-particle,
+.scroll-particle,
+.bg-orbs{
+  z-index: 1 !important;
+}
