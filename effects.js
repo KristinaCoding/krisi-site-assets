@@ -449,4 +449,291 @@
   // Debug: prove the egg script loaded
   console.log("🥚 Easter eggs loaded: press G (burst) or N (toggle), or Konami.");
 })();
+/* =========================================================
+   EXTRA UPGRADES PACK (ALL)
+   - Subtle sci-fi sound on Easter Egg
+   - Scroll glow trails (lightweight)
+   - Magnetic buttons everywhere
+   - Floating neon orbs background (adds a fixed layer)
+   - More cheat codes: GLOW / CYBER / RESET
+   - Mobile easter egg: triple-tap logo OR triple-tap footer
+========================================================= */
+(function () {
+  "use strict";
+
+  const isMobileish = () => window.matchMedia("(max-width: 768px)").matches;
+  const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const isTypingInField = () => {
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = (el.tagName || "").toLowerCase();
+    return tag === "input" || tag === "textarea" || el.isContentEditable;
+  };
+
+  /* -------------------------------
+     0) Create floating orbs layer
+  -------------------------------- */
+  function initOrbsLayer() {
+    if (document.querySelector(".bg-orbs")) return;
+    const orbs = document.createElement("div");
+    orbs.className = "bg-orbs";
+    document.body.appendChild(orbs);
+  }
+
+  /* -------------------------------
+     1) Subtle Sci-Fi Sound (WebAudio)
+     Plays on: easter-glow activation + N toggle on
+  -------------------------------- */
+  let audioCtx = null;
+  function playSciFiBlip() {
+    if (reducedMotion()) return; // respect reduced-motion users
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = audioCtx.currentTime;
+
+      const o1 = audioCtx.createOscillator();
+      const o2 = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      const f = audioCtx.createBiquadFilter();
+
+      // gentle “whoosh”
+      o1.type = "sine";
+      o2.type = "triangle";
+      o1.frequency.setValueAtTime(280, t0);
+      o1.frequency.exponentialRampToValueAtTime(820, t0 + 0.12);
+
+      o2.frequency.setValueAtTime(120, t0);
+      o2.frequency.exponentialRampToValueAtTime(360, t0 + 0.18);
+
+      f.type = "lowpass";
+      f.frequency.setValueAtTime(900, t0);
+      f.frequency.exponentialRampToValueAtTime(2400, t0 + 0.12);
+
+      // tiny volume envelope
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.05, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+
+      o1.connect(f); o2.connect(f);
+      f.connect(g);
+      g.connect(audioCtx.destination);
+
+      o1.start(t0);
+      o2.start(t0);
+      o1.stop(t0 + 0.25);
+      o2.stop(t0 + 0.25);
+    } catch (_) {}
+  }
+
+  /* -------------------------------
+     2) Magnetic buttons everywhere
+     Targets Elementor + WP buttons + your .magnetic
+  -------------------------------- */
+  function initMagneticEverywhere() {
+    if (isMobileish() || reducedMotion()) return;
+
+    const selectors = [
+      ".magnetic",
+      "button",
+      ".elementor-button",
+      ".wp-block-button__link",
+      "a.elementor-button-link",
+      "input[type='submit']",
+      ".ast-button",
+      ".menu a",
+      ".main-navigation a",
+      ".nav-menu a",
+      ".ast-above-header-bar a",
+      ".ast-primary-header-bar a"
+    ];
+
+    const items = document.querySelectorAll(selectors.join(","));
+    if (!items.length) return;
+
+    items.forEach(el => {
+      if (el.dataset.magnet2Bound === "1") return;
+      el.dataset.magnet2Bound = "1";
+
+      const strength = el.classList.contains("magnetic") ? 11 : 7;
+
+      el.addEventListener("mousemove", (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = `translate(${x * strength}px, ${y * (strength * 0.8)}px) scale(1.04)`;
+      });
+
+      el.addEventListener("mouseleave", () => {
+        el.style.transform = "";
+      });
+    });
+  }
+
+  /* -------------------------------
+     3) Scroll glow trails (lightweight)
+     Spawns a few particles while scrolling
+  -------------------------------- */
+  function initScrollTrails() {
+    if (isMobileish() || reducedMotion()) return;
+
+    let last = 0;
+    let lastX = window.innerWidth * 0.5;
+    let lastY = window.innerHeight * 0.6;
+
+    window.addEventListener("mousemove", (e) => {
+      lastX = e.clientX;
+      lastY = e.clientY;
+    }, { passive: true });
+
+    function spawn(px, py) {
+      const p = document.createElement("div");
+      p.className = "scroll-particle";
+      p.style.left = px + "px";
+      p.style.top = py + "px";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 900);
+    }
+
+    window.addEventListener("scroll", () => {
+      const now = performance.now();
+      if (now - last < 90) return; // throttle
+      last = now;
+
+      // spawn a few around cursor-ish position so it feels “reactive”
+      spawn(lastX + (Math.random() * 18 - 9), lastY + (Math.random() * 18 - 9));
+      if (Math.random() > 0.55) spawn(lastX + (Math.random() * 28 - 14), lastY + (Math.random() * 28 - 14));
+    }, { passive: true });
+  }
+
+  /* -------------------------------
+     4) More cheat codes (type words)
+     GLOW  -> 8s burst
+     CYBER -> toggle neon mode
+     RESET -> turn off neon + burst
+  -------------------------------- */
+  let buffer = "";
+  let bufferTimer = null;
+
+  function setAccent(a, b) {
+    document.documentElement.style.setProperty("--accent", a);
+    document.documentElement.style.setProperty("--accent2", b);
+  }
+
+  let neonInterval = null;
+  function startNeonCycle() {
+    const accents = [
+      ["#00F0FF", "#4DEEFF"],
+      ["#A855F7", "#E879F9"],
+      ["#22C55E", "#86EFAC"]
+    ];
+    let i = 0;
+    stopNeonCycle();
+    neonInterval = setInterval(() => {
+      const [a, b] = accents[i % accents.length];
+      setAccent(a, b);
+      i++;
+    }, 420);
+  }
+  function stopNeonCycle() {
+    if (neonInterval) clearInterval(neonInterval);
+    neonInterval = null;
+  }
+
+  function pulseBurst(ms = 8000) {
+    document.body.classList.add("easter-glow");
+    playSciFiBlip();
+    startNeonCycle();
+    window.clearTimeout(pulseBurst._t);
+    pulseBurst._t = window.setTimeout(() => {
+      document.body.classList.remove("easter-glow");
+      stopNeonCycle();
+    }, ms);
+  }
+
+  function toggleNeon() {
+    const on = document.body.classList.toggle("easter-neon");
+    if (on) { startNeonCycle(); playSciFiBlip(); }
+    else stopNeonCycle();
+  }
+
+  function resetModes() {
+    document.body.classList.remove("easter-glow", "easter-neon");
+    stopNeonCycle();
+  }
+
+  function initWordCheats() {
+    window.addEventListener("keydown", (e) => {
+      if (isTypingInField()) return;
+      const k = (e.key || "").toLowerCase();
+      if (!/^[a-z]$/.test(k)) return;
+
+      buffer += k;
+      buffer = buffer.slice(-10);
+
+      clearTimeout(bufferTimer);
+      bufferTimer = setTimeout(() => { buffer = ""; }, 900);
+
+      if (buffer.endsWith("glow")) pulseBurst(8000);
+      if (buffer.endsWith("cyber")) toggleNeon();
+      if (buffer.endsWith("reset")) resetModes();
+    });
+  }
+
+  /* -------------------------------
+     5) Mobile Easter Egg: triple tap
+     - triple tap site logo OR footer area -> burst
+  -------------------------------- */
+  function initMobileTripleTap() {
+    let taps = 0;
+    let t = null;
+
+    // Try logo first (Astra logo selector)
+    const logo = document.querySelector(".custom-logo-link, .site-branding a, .ast-site-identity a");
+    const footer = document.querySelector("#colophon");
+
+    const targets = [logo, footer].filter(Boolean);
+    if (!targets.length) return;
+
+    function tapHandler() {
+      taps++;
+      clearTimeout(t);
+      t = setTimeout(() => { taps = 0; }, 550);
+
+      if (taps >= 3) {
+        taps = 0;
+        pulseBurst(7000);
+      }
+    }
+
+    targets.forEach(el => el.addEventListener("touchend", tapHandler, { passive: true }));
+  }
+
+  /* -------------------------------
+     Hook into existing “G” and “N” keys
+     (If you already added eggs earlier, this still works.)
+  -------------------------------- */
+  function initQuickKeys() {
+    window.addEventListener("keydown", (e) => {
+      if (isTypingInField()) return;
+      const k = (e.key || "").toLowerCase();
+      if (k === "g") pulseBurst(8000);
+      if (k === "n") toggleNeon();
+    });
+  }
+
+  /* -------------------------------
+     BOOT
+  -------------------------------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    initOrbsLayer();
+    initMagneticEverywhere();
+    initScrollTrails();
+    initWordCheats();
+    initQuickKeys();
+    initMobileTripleTap();
+    console.log("🚀 Upgrades pack loaded: Orbs + Scroll trails + Sound + Word cheats + Mobile triple tap.");
+  });
+})();
+
 
