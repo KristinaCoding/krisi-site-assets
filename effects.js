@@ -1,14 +1,33 @@
 (function () {
   "use strict";
 
-  /* =========================
+  /* =========================================================
+     KRISI.SITE — CYBER GLASS FX (ONE FILE / PRODUCTION)
+     Includes:
+     ✅ Page transition glow + WHOOSH (internal links)
+     ✅ Section accent shift (hover + scroll)
+     ✅ Cursor glow + trailing particles
+     ✅ Hero proximity glow/lean
+     ✅ Card tilt + click burst + bleep
+     ✅ Footer orbit dots (Astra social icons)
+     ✅ Neon button hover physics + bleep
+     ✅ Section reveal animations
+     ✅ Orbs background + scroll parallax
+     ✅ Floating background particles
+     ✅ Scroll glow trails
+     ✅ Magnetic pull
+     ✅ SFX toggle (S) + Easter eggs (G/N/R, glow/cyber/reset, Konami)
+  ========================================================= */
+
+  /* -------------------------
      Helpers / guards
-  ========================== */
+  ------------------------- */
   function whenReady(fn) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", fn, { once: true });
     } else fn();
   }
+
   const isMobileish = () => window.matchMedia("(max-width: 768px)").matches;
   const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -24,9 +43,120 @@
     document.documentElement.style.setProperty("--accent2", b);
   }
 
-  /* =========================
-     A) Page transition glow
-  ========================== */
+  /* -------------------------
+     SFX (toggle + synth)
+     Toggle: press S
+     NOTE: you must click once on the page for audio to be allowed
+  ------------------------- */
+  const SFX_KEY = "krisi_sfx_on";
+  let sfxOn = localStorage.getItem(SFX_KEY) === "1";
+  let audioCtx = null;
+
+  function ensureAudio() {
+    if (reducedMotion()) return null;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      return audioCtx;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function blip(freqA = 280, freqB = 820, dur = 0.14, gainAmt = 0.04) {
+    if (!sfxOn || reducedMotion()) return;
+    const ctx = ensureAudio();
+    if (!ctx) return;
+
+    const t0 = ctx.currentTime;
+
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    const f = ctx.createBiquadFilter();
+
+    o.type = "triangle";
+    o.frequency.setValueAtTime(freqA, t0);
+    o.frequency.exponentialRampToValueAtTime(Math.max(1, freqB), t0 + dur);
+
+    f.type = "lowpass";
+    f.frequency.setValueAtTime(900, t0);
+    f.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
+
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gainAmt, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+    o.connect(f);
+    f.connect(g);
+    g.connect(ctx.destination);
+
+    o.start(t0);
+    o.stop(t0 + dur + 0.02);
+  }
+
+  // WHOOSH for page transitions / navigation
+  function playWhoosh() {
+    if (!sfxOn || reducedMotion()) return;
+    const ctx = ensureAudio();
+    if (!ctx) return;
+
+    const t0 = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(180, t0);
+    osc.frequency.exponentialRampToValueAtTime(1800, t0 + 0.32);
+
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(520, t0);
+    filter.frequency.exponentialRampToValueAtTime(2600, t0 + 0.32);
+    filter.Q.setValueAtTime(1.2, t0);
+
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.07, t0 + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.38);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(t0);
+    osc.stop(t0 + 0.42);
+  }
+
+  function initSfxToggle() {
+    // Browsers require a user gesture — this helps resume if already created.
+    window.addEventListener(
+      "pointerdown",
+      () => {
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+      },
+      { passive: true }
+    );
+
+    window.addEventListener("keydown", (e) => {
+      if (isTypingInField()) return;
+      if ((e.key || "").toLowerCase() !== "s") return;
+
+      sfxOn = !sfxOn;
+      localStorage.setItem(SFX_KEY, sfxOn ? "1" : "0");
+      document.body.classList.toggle("sfx-on", sfxOn);
+
+      // confirm with a little blip
+      blip(220, 520, 0.16, 0.05);
+      console.log("SFX:", sfxOn ? "ON" : "OFF");
+    });
+
+    document.body.classList.toggle("sfx-on", sfxOn);
+  }
+
+  /* -------------------------
+     A) Page transition glow + WHOOSH
+     (internal links)
+  ------------------------- */
   function initPageTransitionGlow() {
     if (reducedMotion()) return;
 
@@ -57,15 +187,17 @@
 
       e.preventDefault();
       document.body.classList.add("pt-leaving");
-      blip(220, 980, 0.12, 0.05);
+      playWhoosh();
 
       setTimeout(() => { window.location.href = url.href; }, 320);
     });
   }
 
-  /* =========================
-     B) Section accent shift (hover/scroll)
-  ========================== */
+  /* -------------------------
+     B) Section accent shift (hover + scroll)
+     Add classes to sections/containers:
+     accent-cyan / accent-purple / accent-green
+  ------------------------- */
   function initSectionAccentShift() {
     const sections = document.querySelectorAll(".accent-cyan, .accent-purple, .accent-green");
     if (!sections.length) return;
@@ -112,9 +244,9 @@
     onScroll();
   }
 
-  /* =========================
-     C) Cursor glow + particles
-  ========================== */
+  /* -------------------------
+     C) Cursor glow + trailing particles
+  ------------------------- */
   function initCursorFX() {
     if (isMobileish() || reducedMotion()) return;
 
@@ -138,42 +270,35 @@
       const now = performance.now();
       if (now - lastParticleTime > particleEveryMs) {
         lastParticleTime = now;
-        spawnParticle(tx, ty);
+        const p = document.createElement("div");
+        p.className = "cursor-particle";
+        p.style.left = tx + "px";
+        p.style.top = ty + "px";
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 650);
       }
     }, { passive: true });
 
-    function spawnParticle(px, py) {
-      const p = document.createElement("div");
-      p.className = "cursor-particle";
-      p.style.left = px + "px";
-      p.style.top = py + "px";
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 650);
-    }
-
-    function loop() {
+    (function loop() {
       x += (tx - x) * 0.18;
       y += (ty - y) * 0.18;
       glow.style.left = x + "px";
       glow.style.top = y + "px";
       requestAnimationFrame(loop);
-    }
-    loop();
+    })();
   }
 
-  /* =========================
-     D) Hero proximity energy
-  ========================== */
+  /* -------------------------
+     D) Hero proximity energy (glow + lean)
+     Target: .hero-title (or any heading with .proximity-heading)
+  ------------------------- */
   function initHeroEnergy() {
     if (isMobileish() || reducedMotion()) return;
 
-    const hero =
-      document.querySelector(".hero-title") ||
-      document.querySelector(".proximity-heading");
-
+    const hero = document.querySelector(".hero-title") || document.querySelector(".proximity-heading");
     if (!hero) return;
-    hero.classList.add("proximity-heading");
 
+    hero.classList.add("proximity-heading");
     const strength = 14;
 
     window.addEventListener("mousemove", (e) => {
@@ -184,9 +309,10 @@
       const dx = e.clientX - cx;
       const dy = e.clientY - cy;
       const dist = Math.hypot(dx, dy);
-      const max = Math.max(window.innerWidth, window.innerHeight) * 0.6;
 
+      const max = Math.max(window.innerWidth, window.innerHeight) * 0.6;
       const p = Math.max(0, 1 - (dist / max));
+
       hero.style.setProperty("--p", p.toFixed(3));
 
       const tx = (dx / Math.max(240, r.width)) * strength * p;
@@ -196,9 +322,12 @@
     }, { passive: true });
   }
 
-  /* =========================
-     E) Card tilt + click burst
-  ========================== */
+  /* -------------------------
+     E) Card FX
+     - tilt (desktop)
+     - click burst + bleep
+     Target: .glass-card
+  ------------------------- */
   function initCardFX() {
     const cards = document.querySelectorAll(".glass-card");
     if (!cards.length) return;
@@ -211,7 +340,7 @@
       // click burst
       if (card.dataset.burstBound !== "1") {
         card.dataset.burstBound = "1";
-        card.style.position = card.style.position || "relative";
+        if (!card.style.position) card.style.position = "relative";
 
         card.addEventListener("click", (e) => {
           const r = card.getBoundingClientRect();
@@ -229,6 +358,12 @@
         });
       }
 
+      // hover bleep (subtle)
+      if (tiltOn && card.dataset.hoverSoundBound !== "1") {
+        card.dataset.hoverSoundBound = "1";
+        card.addEventListener("mouseenter", () => blip(150, 320, 0.08, 0.02));
+      }
+
       // tilt
       if (tiltOn && card.dataset.tiltBound !== "1") {
         card.dataset.tiltBound = "1";
@@ -239,8 +374,10 @@
           const r = card.getBoundingClientRect();
           const x = e.clientX - r.left;
           const y = e.clientY - r.top;
+
           const rx = ((y / r.height) - 0.5) * -2 * maxTilt;
           const ry = ((x / r.width) - 0.5) *  2 * maxTilt;
+
           card.style.transform =
             `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${scale})`;
         });
@@ -253,9 +390,10 @@
     });
   }
 
-  /* =========================
-     F) Footer orbit
-  ========================== */
+  /* -------------------------
+     F) Footer orbit dots
+     Target: #colophon a.ast-builder-social-element
+  ------------------------- */
   function initFooterOrbit() {
     const links = document.querySelectorAll("#colophon a.ast-builder-social-element");
     if (!links.length) return;
@@ -267,6 +405,7 @@
 
       const layer = document.createElement("span");
       layer.className = "orbit-layer";
+
       for (let i = 0; i < 3; i++) {
         const spin = document.createElement("span");
         spin.className = "orbit-spin";
@@ -275,13 +414,14 @@
         spin.appendChild(dot);
         layer.appendChild(spin);
       }
+
       a.appendChild(layer);
     });
   }
 
-  /* =========================
-     G) Neon button hover physics
-  ========================== */
+  /* -------------------------
+     G) Neon button hover physics + bleep
+  ------------------------- */
   function initNeonButtonPhysics() {
     if (isMobileish() || reducedMotion()) return;
 
@@ -305,10 +445,8 @@
 
       btn.addEventListener("mousemove", (e) => {
         const r = btn.getBoundingClientRect();
-        const x = e.clientX - r.left;
-        const y = e.clientY - r.top;
-        btn.style.setProperty("--mx", `${x}px`);
-        btn.style.setProperty("--my", `${y}px`);
+        btn.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        btn.style.setProperty("--my", `${e.clientY - r.top}px`);
       });
 
       btn.addEventListener("mouseenter", () => blip(260, 520, 0.12, 0.03));
@@ -316,9 +454,9 @@
     });
   }
 
-  /* =========================
+  /* -------------------------
      H) Section reveal animations
-  ========================== */
+  ------------------------- */
   function initSectionReveal() {
     if (reducedMotion()) return;
 
@@ -342,9 +480,9 @@
     nodes.forEach(el => io.observe(el));
   }
 
-  /* =========================
+  /* -------------------------
      I) Orbs layer + scroll parallax
-  ========================== */
+  ------------------------- */
   function initOrbsAndParallax() {
     if (reducedMotion()) return;
 
@@ -365,17 +503,16 @@
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    function loop() {
+    (function loop() {
       current += (target - current) * 0.08;
       orbs.style.transform = `translate3d(0, ${-current}px, 0) scale(1.05)`;
       requestAnimationFrame(loop);
-    }
-    loop();
+    })();
   }
 
-  /* =========================
+  /* -------------------------
      J) Floating background particles
-  ========================== */
+  ------------------------- */
   function initFloatingParticles() {
     if (isMobileish() || reducedMotion()) return;
     if (document.querySelector(".bg-particles")) return;
@@ -401,13 +538,14 @@
       p.style.transform = `scale(${s.toFixed(2)})`;
       p.style.animationDuration = d.toFixed(1) + "s";
       p.style.animationDelay = (-Math.random() * d).toFixed(1) + "s";
+
       wrap.appendChild(p);
     }
   }
 
-  /* =========================
-     K) Scroll glow trails (optional)
-  ========================== */
+  /* -------------------------
+     K) Scroll glow trails (lightweight)
+  ------------------------- */
   function initScrollTrails() {
     if (isMobileish() || reducedMotion()) return;
 
@@ -433,14 +571,15 @@
       const now = performance.now();
       if (now - last < 90) return;
       last = now;
+
       spawn(lastX + (Math.random() * 18 - 9), lastY + (Math.random() * 18 - 9));
       if (Math.random() > 0.55) spawn(lastX + (Math.random() * 28 - 14), lastY + (Math.random() * 28 - 14));
     }, { passive: true });
   }
 
-  /* =========================
+  /* -------------------------
      L) Magnetic pull (menu + .magnetic)
-  ========================== */
+  ------------------------- */
   function initMagneticPull() {
     if (isMobileish() || reducedMotion()) return;
 
@@ -472,69 +611,11 @@
     });
   }
 
-  /* =========================
-     M) Sound FX toggle (S)
-     + simple synth blip()
-  ========================== */
-  const SFX_KEY = "krisi_sfx_on";
-  let sfxOn = localStorage.getItem(SFX_KEY) === "1";
-  let audioCtx = null;
-
-  function blip(freqA = 280, freqB = 820, dur = 0.14, gain = 0.04) {
-    if (!sfxOn || reducedMotion()) return;
-    try {
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-
-      const t0 = audioCtx.currentTime;
-
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      const f = audioCtx.createBiquadFilter();
-
-      o.type = "triangle";
-      o.frequency.setValueAtTime(freqA, t0);
-      o.frequency.exponentialRampToValueAtTime(freqB, t0 + dur);
-
-      f.type = "lowpass";
-      f.frequency.setValueAtTime(900, t0);
-      f.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
-
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.exponentialRampToValueAtTime(gain, t0 + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-
-      o.connect(f); f.connect(g); g.connect(audioCtx.destination);
-      o.start(t0);
-      o.stop(t0 + dur + 0.02);
-    } catch (_) {}
-  }
-
-  function initSfxToggle() {
-    // enable audio context on first user click
-    window.addEventListener("pointerdown", () => {
-      if (!audioCtx) return;
-      if (audioCtx.state === "suspended") audioCtx.resume();
-    }, { passive: true });
-
-    window.addEventListener("keydown", (e) => {
-      if (isTypingInField()) return;
-      if ((e.key || "").toLowerCase() !== "s") return;
-
-      sfxOn = !sfxOn;
-      localStorage.setItem(SFX_KEY, sfxOn ? "1" : "0");
-      document.body.classList.toggle("sfx-on", sfxOn);
-      blip(220, 520, 0.16, 0.05);
-      console.log("SFX:", sfxOn ? "ON" : "OFF");
-    });
-
-    document.body.classList.toggle("sfx-on", sfxOn);
-  }
-
-  /* =========================
-     N) Easter eggs (G / N / Konami / word cheats)
-  ========================== */
+  /* -------------------------
+     M) Easter eggs (G/N/R + words + Konami)
+  ------------------------- */
   let neonInterval = null;
+
   function startNeonCycle() {
     const accents = [
       ["#00F0FF", "#4DEEFF"],
@@ -542,6 +623,7 @@
       ["#22C55E", "#86EFAC"]
     ];
     let i = 0;
+
     stopNeonCycle();
     neonInterval = setInterval(() => {
       const [a, b] = accents[i % accents.length];
@@ -549,6 +631,7 @@
       i++;
     }, 420);
   }
+
   function stopNeonCycle() {
     if (neonInterval) clearInterval(neonInterval);
     neonInterval = null;
@@ -628,12 +711,13 @@
       }
     });
 
-    console.log("🥚 Eggs: G=burst, N=toggle neon, R=reset. Word: glow/cyber/reset. Konami works too.");
+    console.log("🥚 Eggs: G=burst, N=toggle neon, R=reset. Words: glow/cyber/reset. Konami works.");
+    console.log("🔊 SFX toggle: press S (click once first to unlock audio).");
   }
 
-  /* =========================
+  /* -------------------------
      BOOT
-  ========================== */
+  ------------------------- */
   whenReady(() => {
     initSfxToggle();
 
@@ -656,7 +740,7 @@
 
     initEggs();
 
-    console.log("✅ KRISI FX loaded.");
+    console.log("✅ KRISI FX loaded (single file).");
   });
 
 })();
