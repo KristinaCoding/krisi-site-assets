@@ -210,3 +210,39 @@
   });
 
 })();
+/* ===============================
+   SIGNATURE HERO ENERGY FIELD
+=============================== */
+(function(){
+  const strength = 14;
+
+  function initHeroEnergy(){
+    const hero = document.querySelector(".hero-title");
+    if(!hero) return;
+
+    hero.classList.add("proximity-heading");
+
+    window.addEventListener("mousemove", (e)=>{
+      const r = hero.getBoundingClientRect();
+      const cx = r.left + r.width/2;
+      const cy = r.top  + r.height/2;
+
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      const max = Math.max(window.innerWidth, window.innerHeight) * 0.6;
+      const p = Math.max(0, 1 - (dist / max));
+
+      hero.style.setProperty("--p", p.toFixed(3));
+
+      const tx = (dx / r.width) * strength * p;
+      const ty = (dy / r.height) * strength * p;
+
+      hero.style.transform = `translate(${tx}px, ${ty}px)`;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", initHeroEnergy);
+})();
+
