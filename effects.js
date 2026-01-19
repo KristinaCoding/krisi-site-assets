@@ -1,29 +1,70 @@
 (function () {
+  "use strict";
 
+  /* -------------------------------
+     Helper — Run when DOM is ready
+  -------------------------------- */
   function whenReady(fn) {
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn);
-    } else fn();
+      document.addEventListener("DOMContentLoaded", fn, { once: true });
+    } else {
+      fn();
+    }
   }
 
-  /* PAGE FADE (demo-safe) */
-  function initPageFades(){
+  /* -------------------------------
+     MOBILE / REDUCED MOTION GUARDS
+  -------------------------------- */
+  function isMobileish() {
+    return window.matchMedia("(max-width: 768px)").matches;
+  }
+  function reducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  /* -------------------------------
+     PAGE FADE TRANSITIONS (optional)
+     NOTE: Requires you to add CSS for .is-loaded/.is-leaving if you want it visible.
+  -------------------------------- */
+  function initPageFades() {
     document.body.classList.add("is-loaded");
+
     document.addEventListener("click", (e) => {
-      const a = e.target.closest("a");
-      if (!a) return;
-      const href = a.getAttribute("href") || "";
-      if (!href || href.startsWith("#") || a.target === "_blank") return;
-      // In CodePen we don't navigate away; keep this disabled.
+      const link = e.target.closest("a");
+      if (!link) return;
+
+      const href = link.getAttribute("href") || "";
+      if (
+        !href ||
+        href.startsWith("#") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        link.target === "_blank" ||
+        e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+      ) return;
+
+      let url;
+      try { url = new URL(href, window.location.href); } catch { return; }
+      if (url.origin !== window.location.origin) return;
+
+      e.preventDefault();
+      document.body.classList.add("is-leaving");
+      setTimeout(() => { window.location.href = url.href; }, 260);
     });
   }
 
-  /* SECTION ACCENT SHIFT */
+  /* -------------------------------
+     SECTION ACCENT SHIFT (hover/scroll)
+     Add Elementor classes:
+       accent-cyan / accent-purple / accent-green
+  -------------------------------- */
   function initSectionAccentShift() {
-    const sections = document.querySelectorAll(".accent-cyan, .accent-purple, .accent-green");
+    const sections = document.querySelectorAll(
+      ".accent-cyan, .accent-purple, .accent-green"
+    );
     if (!sections.length) return;
 
-    function setAccentFrom(el){
+    function setAccentFrom(el) {
       const cs = getComputedStyle(el);
       const a = cs.getPropertyValue("--accent").trim();
       const a2 = cs.getPropertyValue("--accent2").trim();
@@ -31,40 +72,65 @@
       if (a2) document.documentElement.style.setProperty("--accent2", a2);
     }
 
+    // Hover changes
     sections.forEach(sec => {
       sec.addEventListener("mouseenter", () => setAccentFrom(sec));
       sec.addEventListener("focusin", () => setAccentFrom(sec));
     });
 
+    // Scroll-based (section closest to screen center)
     let ticking = false;
-    function onScroll(){
+    function onScroll() {
       if (ticking) return;
       ticking = true;
+
       requestAnimationFrame(() => {
         ticking = false;
-        let best = null, bestDist = Infinity;
+        let best = null;
+        let bestDist = Infinity;
         const mid = window.innerHeight * 0.45;
 
         sections.forEach(sec => {
           const r = sec.getBoundingClientRect();
           const center = r.top + r.height / 2;
           const dist = Math.abs(center - mid);
-          if (dist < bestDist){ bestDist = dist; best = sec; }
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = sec;
+          }
         });
+
         if (best) setAccentFrom(best);
       });
     }
 
-    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
   }
 
-  /* MAGNETIC PULL */
-  function initMagneticPull(){
-    const items = document.querySelectorAll(".demo-nav a, .magnetic");
+  /* -------------------------------
+     MAGNETIC PULL (menu + any .magnetic)
+     Add class "magnetic" to Elementor buttons/cards you want
+  -------------------------------- */
+  function initMagneticPull() {
+    const selectors = [
+      ".ast-above-header-bar .site-header-above-section-center a",
+      ".ast-primary-header-bar a",
+      ".main-navigation a",
+      ".nav-menu a",
+      ".magnetic"
+    ];
+
+    const items = document.querySelectorAll(selectors.join(","));
+    if (!items.length) {
+      setTimeout(initMagneticPull, 600);
+      return;
+    }
+
     items.forEach(el => {
       if (el.dataset.magnetBound === "1") return;
       el.dataset.magnetBound = "1";
+
       const strength = el.classList.contains("magnetic") ? 10 : 6;
 
       el.addEventListener("mousemove", (e) => {
@@ -73,120 +139,190 @@
         const y = (e.clientY - r.top) / r.height - 0.5;
         el.style.transform = `translate(${x * strength}px, ${y * (strength * 0.85)}px) scale(1.04)`;
       });
-      el.addEventListener("mouseleave", () => el.style.transform = "");
+
+      el.addEventListener("mouseleave", () => {
+        el.style.transform = "";
+      });
     });
   }
 
-  /* CURSOR GLOW + PARTICLES */
-  function initCursorFX(){
-    if (window.matchMedia("(max-width: 768px)").matches) return;
+  /* -------------------------------
+     CURSOR GLOW + TRAILING PARTICLES
+  -------------------------------- */
+  function initCursorFX() {
+    if (isMobileish() || reducedMotion()) return;
 
+    // Create glow element if missing
     let glow = document.querySelector(".cursor-glow");
-    if (!glow){
+    if (!glow) {
       glow = document.createElement("div");
       glow.className = "cursor-glow";
       document.body.appendChild(glow);
     }
 
-    let x = innerWidth/2, y = innerHeight/2, tx = x, ty = y;
+    let x = window.innerWidth / 2, y = window.innerHeight / 2;
+    let tx = x, ty = y;
 
+    // Particle throttling
     let lastParticleTime = 0;
     const particleEveryMs = 22;
 
     window.addEventListener("mousemove", (e) => {
-      tx = e.clientX; ty = e.clientY;
+      tx = e.clientX;
+      ty = e.clientY;
 
       const now = performance.now();
-      if (now - lastParticleTime > particleEveryMs){
+      if (now - lastParticleTime > particleEveryMs) {
         lastParticleTime = now;
-        const p = document.createElement("div");
-        p.className = "cursor-particle";
-        p.style.left = tx + "px";
-        p.style.top = ty + "px";
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 650);
+        spawnParticle(tx, ty);
       }
-    }, { passive:true });
+    }, { passive: true });
 
-    (function loop(){
-      x += (tx - x) * 0.22;
-      y += (ty - y) * 0.22;
+    function spawnParticle(px, py) {
+      const p = document.createElement("div");
+      p.className = "cursor-particle";
+      p.style.left = px + "px";
+      p.style.top = py + "px";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 650);
+    }
+
+    function loop() {
+      x += (tx - x) * 0.18;
+      y += (ty - y) * 0.18;
       glow.style.left = x + "px";
       glow.style.top = y + "px";
       requestAnimationFrame(loop);
-    })();
+    }
+    loop();
   }
 
-  /* HEADING PROXIMITY GLOW */
-  function initHeadingProximityGlow(){
-    if (window.matchMedia("(max-width: 768px)").matches) return;
+  /* -------------------------------
+     HERO PROXIMITY ENERGY (glow + lean)
+     Target: .hero-title (or add .proximity-heading to any heading)
+  -------------------------------- */
+  function initHeroEnergy() {
+    if (isMobileish() || reducedMotion()) return;
 
-    const headings = Array.from(document.querySelectorAll("h1, h2, h3, .elementor-heading-title"))
-      .filter(h => h.textContent && h.textContent.trim().length);
+    // Prefer .hero-title, fallback to first .proximity-heading
+    const hero = document.querySelector(".hero-title") || document.querySelector(".proximity-heading");
+    if (!hero) return;
 
-    headings.forEach(h => h.classList.add("proximity-heading"));
-    if (!headings.length) return;
+    hero.classList.add("proximity-heading");
 
-    let mx = innerWidth/2, my = innerHeight/2;
-    let ticking = false;
+    const strength = 14;
 
     window.addEventListener("mousemove", (e) => {
-      mx = e.clientX; my = e.clientY;
-      if (ticking) return;
-      ticking = true;
+      const r = hero.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
 
-      requestAnimationFrame(() => {
-        ticking = false;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.hypot(dx, dy);
 
-        for (const h of headings){
-          const r = h.getBoundingClientRect();
-          if (r.bottom < 0 || r.top > innerHeight) continue;
+      const max = Math.max(window.innerWidth, window.innerHeight) * 0.6;
+      const p = Math.max(0, 1 - (dist / max));
 
-          const cx = r.left + r.width/2;
-          const cy = r.top + r.height/2;
-          const dx = mx - cx;
-          const dy = my - cy;
-          const dist = Math.sqrt(dx*dx + dy*dy);
+      hero.style.setProperty("--p", p.toFixed(3));
 
-          const radius = Math.max(220, Math.min(520, r.width * 0.9));
-          const p = Math.max(0, Math.min(1, 1 - dist / radius));
-          h.style.setProperty("--p", p.toFixed(3));
-        }
-      });
-    }, { passive:true });
+      const tx = (dx / Math.max(240, r.width)) * strength * p;
+      const ty = (dy / Math.max(240, r.height)) * strength * p;
+
+      hero.style.transform = `translate(${tx}px, ${ty}px)`;
+    }, { passive: true });
   }
 
-  /* CLICK GLOW EXPLOSION */
-  function initCardClickBurst(){
-    document.addEventListener("click", (e) => {
-      const card = e.target.closest(".glass-card");
-      if (!card) return;
+  /* -------------------------------
+     3D CARD TILT (hover)
+     Target: .glass-card
+  -------------------------------- */
+  function initCardTilt() {
+    if (isMobileish() || reducedMotion()) return;
 
-      const r = card.getBoundingClientRect();
-      const x = e.clientX - r.left;
-      const y = e.clientY - r.top;
+    const cards = document.querySelectorAll(".glass-card");
+    if (!cards.length) return;
 
-      const burst = document.createElement("span");
-      burst.className = "click-burst";
-      burst.style.left = x + "px";
-      burst.style.top = y + "px";
-      card.appendChild(burst);
+    const maxTilt = 12;   // degrees
+    const scale = 1.04;   // hover scale
 
-      setTimeout(() => burst.remove(), 700);
+    cards.forEach(card => {
+      if (card.dataset.tiltBound === "1") return;
+      card.dataset.tiltBound = "1";
+
+      card.style.transformStyle = "preserve-3d";
+      card.style.willChange = "transform";
+
+      card.addEventListener("mousemove", (e) => {
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+
+        const rx = ((y / r.height) - 0.5) * -2 * maxTilt;
+        const ry = ((x / r.width) - 0.5) *  2 * maxTilt;
+
+        card.style.transform =
+          `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${scale})`;
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.style.transform =
+          `perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)`;
+      });
     });
   }
 
-  /* FOOTER ORBIT */
-  function initFooterOrbit(){
-    const links = document.querySelectorAll(".site-footer a");
+  /* -------------------------------
+     CLICK GLOW EXPLOSION ON CARDS
+     Target: .glass-card
+  -------------------------------- */
+  function initCardClickBurst() {
+    const cards = document.querySelectorAll(".glass-card");
+    if (!cards.length) return;
+
+    cards.forEach(card => {
+      if (card.dataset.burstBound === "1") return;
+      card.dataset.burstBound = "1";
+
+      card.style.position = card.style.position || "relative";
+
+      card.addEventListener("click", (e) => {
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+
+        const b = document.createElement("div");
+        b.className = "click-burst";
+        b.style.left = x + "px";
+        b.style.top = y + "px";
+
+        card.appendChild(b);
+        setTimeout(() => b.remove(), 560);
+      });
+    });
+  }
+
+  /* -------------------------------
+     FOOTER ICON ORBIT (only in footer)
+     Target: #colophon a.ast-builder-social-element
+     NOTE: Your CSS already styles .orbit-layer/.orbit-dot etc.
+  -------------------------------- */
+  function initFooterOrbit() {
+    const links = document.querySelectorAll("#colophon a.ast-builder-social-element");
+    if (!links.length) return;
+
     links.forEach(a => {
       if (a.dataset.orbitBound === "1") return;
       a.dataset.orbitBound = "1";
 
+      // If orbit markup already exists, skip
+      if (a.querySelector(".orbit-layer")) return;
+
       const layer = document.createElement("span");
       layer.className = "orbit-layer";
 
-      for (let i = 0; i < 3; i++){
+      // 3 dots with different speeds
+      for (let i = 0; i < 3; i++) {
         const spin = document.createElement("span");
         spin.className = "orbit-spin";
         const dot = document.createElement("span");
@@ -198,51 +334,20 @@
     });
   }
 
+  /* -------------------------------
+     BOOT
+  -------------------------------- */
   whenReady(() => {
-    initPageFades();
+    // Optional fades (keep if you like)
+    // initPageFades();
+
     initSectionAccentShift();
     initMagneticPull();
     initCursorFX();
-    initHeadingProximityGlow();
+    initHeroEnergy();
+    initCardTilt();
     initCardClickBurst();
     initFooterOrbit();
-    // wave-glow is CSS-only: add class "wave-glow" to anything
   });
 
 })();
-/* ===============================
-   SIGNATURE HERO ENERGY FIELD
-=============================== */
-(function(){
-  const strength = 14;
-
-  function initHeroEnergy(){
-    const hero = document.querySelector(".hero-title");
-    if(!hero) return;
-
-    hero.classList.add("proximity-heading");
-
-    window.addEventListener("mousemove", (e)=>{
-      const r = hero.getBoundingClientRect();
-      const cx = r.left + r.width/2;
-      const cy = r.top  + r.height/2;
-
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-
-      const max = Math.max(window.innerWidth, window.innerHeight) * 0.6;
-      const p = Math.max(0, 1 - (dist / max));
-
-      hero.style.setProperty("--p", p.toFixed(3));
-
-      const tx = (dx / r.width) * strength * p;
-      const ty = (dy / r.height) * strength * p;
-
-      hero.style.transform = `translate(${tx}px, ${ty}px)`;
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", initHeroEnergy);
-})();
-
