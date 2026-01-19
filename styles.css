@@ -405,3 +405,66 @@ hr,
 .glass-card{
   border-color: rgba(0,240,255,.14) !important;
 }
+/* =========================================
+   FOOTER FIX — center icons in a horizontal row
+   Works for Astra + Elementor
+   ========================================= */
+
+/* 1) Make the footer area a flex row + centered */
+.site-footer,
+.site-footer .ast-container,
+.site-footer .ast-footer-overlay,
+.site-footer .elementor-container,
+.site-footer .elementor-widget-container{
+  width: 100% !important;
+}
+
+/* 2) Target common footer link groups and force horizontal layout */
+.site-footer .footer-row,
+.site-footer .elementor-social-icons-wrapper,
+.site-footer .elementor-social-icons,
+.site-footer .elementor-icon-list-items,
+.site-footer .wp-block-social-links,
+.site-footer .social-icons,
+.site-footer .ast-social-icons,
+.site-footer .footer-social{
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 22px !important;
+  flex-wrap: wrap !important;
+  margin: 0 auto !important;
+  padding: 18px 16px !important;
+}
+
+/* 3) If the icons are inside list items, stop them being block-stacked */
+.site-footer .elementor-icon-list-item,
+.site-footer .wp-block-social-link,
+.site-footer li{
+  display: inline-flex !important;
+}
+
+/* 4) Make each icon link a neat square and remove weird offsets */
+.site-footer a{
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  margin: 0 !important;
+}
+
+/* 5) Fix cases where the container is set to column */
+.site-footer .elementor-column,
+.site-footer .elementor-widget-wrap,
+.site-footer .e-con-inner{
+  flex-direction: row !important;
+  justify-content: center !important;
+}
+
+/* Optional: keep footer line subtle and centered content */
+.site-footer{
+  border-top: 1px solid rgba(0,240,255,.12) !important;
+}
