@@ -68,7 +68,7 @@ a{ color:inherit; text-decoration:none !important; }
 }
 
 /* ======================================================
-   HEADER BASE
+    BASE
 ====================================================== */
 .ast-primary-header-bar,
 .ast-above-header-bar,
@@ -113,12 +113,7 @@ a{ color:inherit; text-decoration:none !important; }
 
   gap: 42px !important;
 
-  border-radius: var(--radius) !important;
-  background: var(--glass) !important;
-  border: 1px solid var(--stroke) !important;
-
-  backdrop-filter: blur(14px) saturate(1.15) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(1.15) !important;
+   -webkit-backdrop-filter: blur(14px) saturate(1.15) !important;
 
   box-shadow: var(--shadow), var(--glow) !important;
 }
