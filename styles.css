@@ -1,28 +1,46 @@
 /* ======================================================
-   KRISI.SITE — FX PACK (CLEAN + BLACK BACKGROUND FIX)
+   KRISI.SITE — CYBER GLASS (CLEAN REWRITE)
+   Astra + Elementor
+   - Black base
+   - Glass menu bar (one panel)
+   - Glass social bar (one panel)
+   - Dropdown glass + readable
+   - Cursor glow + tail + particles support
+   - Orbit particles support
 ====================================================== */
 
+/* ======================
+   THEME VARIABLES
+====================== */
 :root{
   --bg:#000;
   --text:#E6F1FF;
+  --muted:#9FB3C8;
+
   --cyan:#00F0FF;
   --cyan2:#4DEEFF;
-  --accent: var(--cyan);
-  --accent2: var(--cyan2);
+
+  --glass: rgba(6,14,18,.58);
+  --glass-strong: rgba(6,14,18,.80);
+  --stroke: rgba(0,240,255,.18);
+
+  --shadow: 0 18px 44px rgba(0,0,0,.55);
+  --glow: 0 0 26px rgba(0,240,255,.12);
 }
 
-/* -----------------------------
-   FORCE EVERYWHERE BLACK
------------------------------- */
+*{ box-sizing:border-box; }
+
 html, body{
-  background: #000 !important;
+  height:100%;
+  margin:0;
+  background: var(--bg) !important;
   color: var(--text);
-  height: 100%;
-  margin: 0;
-  overflow-x: hidden;
+  overflow-x:hidden;
 }
 
-/* Astra/WordPress wrappers that often keep a “default” bg */
+/* ======================
+   FORCE BLACK EVERYWHERE
+====================== */
 #page,
 #content,
 .site,
@@ -39,22 +57,161 @@ html, body{
   background: #000 !important;
 }
 
-/* Elementor sometimes paints overlays */
 .elementor-background-overlay,
 .elementor-section .elementor-background-overlay,
 .e-con .elementor-background-overlay{
   background: transparent !important;
 }
 
-/* -----------------------------
+/* Links */
+a{ color: inherit; text-decoration: none !important; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+
+/* ======================
+   HEADER BAR (BLACK)
+====================== */
+.ast-above-header-bar,
+.ast-primary-header-bar,
+.ast-above-header-bar .ast-container,
+.ast-primary-header-bar .ast-container{
+  background:#000 !important;
+  border-bottom: 1px solid rgba(0,240,255,.10);
+}
+
+/* ======================
+   MENU — ONE GLASS PANEL
+====================== */
+/* Reset wrappers (avoid weird inline-flex bugs) */
+.ast-primary-header-bar .main-header-bar-navigation,
+.ast-primary-header-bar .main-navigation,
+.ast-above-header-bar .main-header-bar-navigation,
+.ast-above-header-bar .main-navigation{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* The actual menu row (UL) becomes the glass bar */
+.ast-primary-header-bar .main-navigation .menu,
+.ast-above-header-bar .main-navigation .menu{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 34px !important;
+  padding: 18px 26px !important;
+
+  border-radius: 10px !important; /* 5–10px requested */
+  background: var(--glass) !important;
+  border: 1px solid var(--stroke) !important;
+
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+
+  box-shadow: var(--shadow), var(--glow);
+}
+
+/* Menu links (big but not “individual pills”) */
+.ast-primary-header-bar .main-navigation .menu > li > a,
+.ast-above-header-bar .main-navigation .menu > li > a{
+  font-size: 22px !important;
+  font-weight: 650 !important;
+  letter-spacing: .6px !important;
+
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+
+  transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.ast-primary-header-bar .main-navigation .menu > li > a:hover,
+.ast-above-header-bar .main-navigation .menu > li > a:hover{
+  background: rgba(0,240,255,.10) !important;
+  box-shadow:
+    0 0 14px rgba(0,240,255,.22),
+    0 0 34px rgba(0,240,255,.10);
+  transform: translateY(-1px);
+}
+
+/* Active item */
+.ast-primary-header-bar .main-navigation .menu > li.current-menu-item > a,
+.ast-above-header-bar .main-navigation .menu > li.current-menu-item > a{
+  background: rgba(0,240,255,.16) !important;
+  box-shadow:
+    0 0 18px rgba(0,240,255,.32),
+    0 0 44px rgba(0,240,255,.14);
+}
+
+/* Dropdown arrow */
+.ast-icon.icon-arrow svg{
+  width: 16px !important;
+  height: 16px !important;
+  transform: translateY(1px);
+}
+
+/* ======================
+   DROPDOWN — GLASS + READABLE
+====================== */
+.main-navigation ul ul,
+.ast-primary-header-bar .sub-menu,
+.ast-above-header-bar .sub-menu{
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: nowrap !important;
+
+  background: var(--glass-strong) !important;
+  border: 1px solid var(--stroke) !important;
+  border-radius: 14px !important;
+  padding: 10px 8px !important;
+
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.65),
+    0 0 26px rgba(0,240,255,.14);
+
+  min-width: 240px;
+}
+
+.main-navigation ul ul li a,
+.ast-primary-header-bar .sub-menu li a,
+.ast-above-header-bar .sub-menu li a{
+  display:block !important;
+  padding: 12px 16px !important;
+  border-radius: 10px !important;
+  text-align:left !important;
+  letter-spacing: .3px !important;
+}
+
+.ast-primary-header-bar .sub-menu li a:hover,
+.ast-above-header-bar .sub-menu li a:hover{
+  background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+  color: #000 !important;
+  box-shadow:
+    0 0 12px rgba(0,240,255,.85),
+    0 0 28px rgba(0,240,255,.55);
+}
+
+/* ======================
    PAGE TRANSITION OVERLAY
------------------------------- */
+====================== */
 .page-transition{
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 99999999;
   opacity: 0;
+
   background:
     radial-gradient(900px 520px at 50% 42%,
       rgba(0,240,255,.18) 0%,
@@ -62,25 +219,48 @@ html, body{
       rgba(0,0,0,0) 64%
     ),
     linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.78));
+
   transition: opacity .28s ease;
   backdrop-filter: blur(1px);
 }
 body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
 
-/* -----------------------------
-   SOCIAL ICONS: nicer “glass” + orbit
------------------------------- */
+/* ======================
+   SOCIAL — ONE GLASS PANEL
+====================== */
+#colophon .ast-footer-social-wrap,
+#colophon .ast-footer-social-1-wrap,
+#colophon .footer-social-inner-wrap.element-social-inner-wrap{
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 26px !important;
+
+  padding: 22px 28px !important;
+  border-radius: 12px !important;
+  background: var(--glass) !important;
+  border: 1px solid var(--stroke) !important;
+
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+
+  box-shadow: var(--shadow), var(--glow);
+}
+
+/* Individual icon boxes (kept, looks premium) */
 #colophon a.ast-builder-social-element{
   position: relative;
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  width: 54px !important;
-  height: 54px !important;
+
+  width: 56px !important;
+  height: 56px !important;
   border-radius: 16px !important;
-  background: rgba(6,14,18,.55) !important;
-  border: 1px solid rgba(0,240,255,.22) !important;
-  box-shadow: 0 0 0 rgba(0,0,0,0);
+
+  background: rgba(6,14,18,.45) !important;
+  border: 1px solid rgba(0,240,255,.20) !important;
+
   transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
   overflow: visible !important;
 }
@@ -98,7 +278,7 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
   height: 22px !important;
 }
 
-/* orbit layer (JS injects) */
+/* Orbit layer (JS injects) */
 .orbit-layer{
   position:absolute;
   left:50%;
@@ -136,49 +316,44 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
     0 0 10px rgba(0,240,255,.95),
     0 0 22px rgba(0,240,255,.55);
 }
-
 @keyframes orbitSpin{
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-/* -----------------------------
-   CUSTOM CURSOR (cleaner base)
------------------------------- */
-
-/* hide default cursor when FX is enabled (JS adds .fx-cursor) */
-body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
+/* ======================
+   CURSOR FX SUPPORT
+====================== */
+body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
 
 .cursor-glow{
   position: fixed;
   left: 0; top: 0;
   pointer-events: none;
-  transform: translate(-50%, -50%);
   z-index: 9999999;
   mix-blend-mode: screen;
 
-  /* size + shape */
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
 
-  /* tail controls updated by JS */
+  transform: translate(-50%, -50%);
+
   --tailLen: 28px;
   --tailRot: 0deg;
   --tailOpacity: .55;
 
   background: radial-gradient(circle,
-    color-mix(in srgb, var(--accent) 92%, white 8%) 0%,
-    color-mix(in srgb, var(--accent) 55%, transparent 45%) 40%,
+    color-mix(in srgb, var(--cyan) 92%, white 8%) 0%,
+    color-mix(in srgb, var(--cyan) 55%, transparent 45%) 40%,
     rgba(0,0,0,0) 72%
   );
 
   filter:
-    drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 85%, transparent))
-    drop-shadow(0 0 28px color-mix(in srgb, var(--accent) 60%, transparent));
+    drop-shadow(0 0 12px rgba(0,240,255,.75))
+    drop-shadow(0 0 28px rgba(0,240,255,.45));
 }
 
-/* tiny ring */
 .cursor-glow::before{
   content:"";
   position:absolute;
@@ -194,7 +369,6 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
   50%{ transform: scale(1.08); opacity:1; }
 }
 
-/* tail */
 .cursor-glow .cursor-tail{
   position:absolute;
   left:50%;
@@ -206,14 +380,10 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
   opacity: var(--tailOpacity);
   pointer-events:none;
   border-radius: 999px;
-  background: linear-gradient(90deg,
-    rgba(0,240,255,.9) 0%,
-    rgba(0,240,255,.0) 85%
-  );
+  background: linear-gradient(90deg, rgba(0,240,255,.9) 0%, rgba(0,240,255,0) 85%);
   filter: drop-shadow(0 0 14px rgba(0,240,255,.45));
 }
 
-/* trailing particles */
 .cursor-particle{
   position: fixed;
   width: 6px;
@@ -225,10 +395,7 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
   z-index: 9999998;
   mix-blend-mode: screen;
 
-  background: radial-gradient(circle,
-    rgba(0,240,255,.9) 0%,
-    rgba(0,0,0,0) 70%
-  );
+  background: radial-gradient(circle, rgba(0,240,255,.9) 0%, rgba(0,0,0,0) 70%);
   filter: drop-shadow(0 0 12px rgba(0,240,255,.55));
   opacity: .95;
   animation: particleFade 620ms ease-out forwards;
@@ -238,260 +405,32 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
   100% { opacity: 0;   transform: translate(-50%,-50%) scale(.2); }
 }
 
-/* Reduced motion + mobile */
-@media (prefers-reduced-motion: reduce){
-  .cursor-glow, .cursor-particle, .page-transition, .orbit-layer, .orbit-spin{
-    animation: none !important;
-    transition: none !important;
+/* ======================
+   SELECTION — CYAN
+====================== */
+::selection{
+  background: rgba(0,240,255,.35);
+  color:#000;
+}
+::-moz-selection{
+  background: rgba(0,240,255,.35);
+  color:#000;
+}
+
+/* ======================
+   MOBILE PERFORMANCE
+====================== */
+@media (max-width:768px){
+  .cursor-glow, .cursor-particle, .orbit-layer{ display:none !important; }
+  body.fx-cursor, body.fx-cursor a{ cursor:auto !important; }
+  .ast-primary-header-bar .main-navigation .menu,
+  .ast-above-header-bar .main-navigation .menu{
+    gap: 18px !important;
+    padding: 14px 14px !important;
+  }
+  .ast-primary-header-bar .main-navigation .menu > li > a,
+  .ast-above-header-bar .main-navigation .menu > li > a{
+    font-size: 18px !important;
+    padding: 8px 10px !important;
   }
 }
-@media (max-width: 768px){
-  .cursor-glow, .cursor-particle, .orbit-layer{ display:none !important; }
-  body.fx-cursor, body.fx-cursor a{ cursor: auto !important; }
-}
-
-/* ============================
-   FIX SERVICES DROPDOWN TEXT
-============================ */
-
-/* Force submenu layout back to normal horizontal text */
-.main-navigation ul ul,
-.ast-primary-header-bar .sub-menu,
-.ast-above-header-bar .sub-menu{
-  writing-mode: horizontal-tb !important;
-  transform: none !important;
-  flex-direction: column !important;
-  white-space: nowrap !important;
-  min-width: 220px;
-}
-
-/* Ensure submenu links display correctly */
-.main-navigation ul ul li a,
-.ast-primary-header-bar .sub-menu li a,
-.ast-above-header-bar .sub-menu li a{
-  display: block !important;
-  writing-mode: horizontal-tb !important;
-  letter-spacing: normal !important;
-  text-orientation: mixed !important;
-  padding: 12px 20px !important;
-  text-align: left !important;
-}
-
-/* Prevent accidental letter stacking */
-.main-navigation ul ul li,
-.ast-primary-header-bar .sub-menu li{
-  width: 100% !important;
-}
-/* =========================
-   TEXT SELECTION — CYAN
-========================= */
-
-::selection{
-  background: rgba(0,240,255,0.35) !important;
-  color: #000 !important;
-  text-shadow:
-    0 0 6px rgba(0,240,255,.9),
-    0 0 18px rgba(0,240,255,.6);
-}
-
-::-moz-selection{
-  background: rgba(0,240,255,0.35) !important;
-  color: #000 !important;
-  text-shadow:
-    0 0 6px rgba(0,240,255,.9),
-    0 0 18px rgba(0,240,255,.6);
-}
-
-/* =========================
-   MENU — BIGGER + WIDER
-========================= */
-
-.ast-above-header-bar a,
-.ast-primary-header-bar a,
-.main-navigation a{
-  font-size: 22px !important;      /* bigger */
-  font-weight: 650 !important;
-  letter-spacing: 0.6px;
-  padding: 18px 40px !important;   /* wider + taller pill */
-  border-radius: 999px !important;
-}
-
-/* reduce “tight” feel on menu row */
-.ast-above-header-bar .site-header-above-section-center ul{
-  gap: 70px !important;
-}
-
-/* dropdown arrows align better when bigger */
-.ast-icon.icon-arrow svg{
-  width: 16px !important;
-  height: 16px !important;
-  transform: translateY(1px);
-}
-/* =========================
-   GLASS MENU BAR (ONE PANEL)
-========================= */
-
-/* The menu area wrapper (Astra) */
-.ast-primary-header-bar .main-header-bar-navigation,
-.ast-primary-header-bar .main-navigation,
-.ast-above-header-bar .main-header-bar-navigation,
-.ast-above-header-bar .main-navigation{
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 14px 22px;
-  border-radius: 10px; /* change to 5px if you want sharper */
-  background: rgba(6,14,18,.55);
-  border: 1px solid rgba(0,240,255,.18);
-  backdrop-filter: blur(14px) saturate(1.15);
-  -webkit-backdrop-filter: blur(14px) saturate(1.15);
-
-  box-shadow:
-    0 18px 44px rgba(0,0,0,.55),
-    0 0 26px rgba(0,240,255,.12);
-}
-
-/* OPTIONAL: remove pill backgrounds so menu looks unified */
-.ast-primary-header-bar .main-navigation a,
-.ast-above-header-bar .main-navigation a{
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-/* =========================
-   GLASS SOCIAL BAR (ONE PANEL)
-========================= */
-
-#colophon .ast-footer-social-wrap,
-#colophon .ast-footer-social-1-wrap,
-#colophon .footer-social-inner-wrap.element-social-inner-wrap{
-  position: relative;
-  display: inline-flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 26px !important;
-
-  padding: 18px 26px !important;
-  border-radius: 12px !important; /* 5–10px if you want tighter */
-  background: rgba(6,14,18,.55) !important;
-  border: 1px solid rgba(0,240,255,.18) !important;
-  backdrop-filter: blur(14px) saturate(1.15);
-  -webkit-backdrop-filter: blur(14px) saturate(1.15);
-
-  box-shadow:
-    0 18px 44px rgba(0,0,0,.55),
-    0 0 26px rgba(0,240,255,.12);
-}
-/* ======================================================
-   FIX: ONE GLASS PANEL FOR MENU + ONE GLASS PANEL FOR SOCIAL
-   (Overrides previous menu/social rules)
-====================================================== */
-
-/* -----------------------------
-   MENU: one glass rectangle
------------------------------- */
-
-/* Reset wrappers so they don't fight layout */
-.ast-primary-header-bar .main-header-bar-navigation,
-.ast-primary-header-bar .main-navigation,
-.ast-above-header-bar .main-header-bar-navigation,
-.ast-above-header-bar .main-navigation{
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-/* Put the glass panel on the UL (the real menu row) */
-.ast-primary-header-bar .main-navigation .menu,
-.ast-above-header-bar .main-navigation .menu{
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 28px !important;
-
-  padding: 14px 20px !important;
-  border-radius: 10px !important; /* 5–10px like you want */
-  background: rgba(6,14,18,.55) !important;
-  border: 1px solid rgba(0,240,255,.18) !important;
-
-  backdrop-filter: blur(14px) saturate(1.15);
-  -webkit-backdrop-filter: blur(14px) saturate(1.15);
-
-  box-shadow:
-    0 18px 44px rgba(0,0,0,.55),
-    0 0 26px rgba(0,240,255,.12);
-}
-
-/* Make links big but NOT separate pill boxes */
-.ast-primary-header-bar .main-navigation .menu > li > a,
-.ast-above-header-bar .main-navigation .menu > li > a{
-  font-size: 22px !important;
-  font-weight: 650 !important;
-  letter-spacing: .6px !important;
-
-  padding: 10px 14px !important;   /* click area */
-  border-radius: 10px !important;  /* small rounding for hover */
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-/* Hover: subtle local glow inside the big panel */
-.ast-primary-header-bar .main-navigation .menu > li > a:hover,
-.ast-above-header-bar .main-navigation .menu > li > a:hover{
-  background: rgba(0,240,255,.10) !important;
-  box-shadow:
-    0 0 14px rgba(0,240,255,.22),
-    0 0 34px rgba(0,240,255,.10);
-}
-
-/* Active item */
-.ast-primary-header-bar .main-navigation .menu > li.current-menu-item > a,
-.ast-above-header-bar .main-navigation .menu > li.current-menu-item > a{
-  background: rgba(0,240,255,.16) !important;
-  box-shadow:
-    0 0 18px rgba(0,240,255,.32),
-    0 0 44px rgba(0,240,255,.14);
-}
-
-/* Dropdown arrow size */
-.ast-icon.icon-arrow svg{
-  width: 16px !important;
-  height: 16px !important;
-  transform: translateY(1px);
-}
-
-/* -----------------------------
-   SOCIAL: one glass rectangle
------------------------------- */
-#colophon .ast-footer-social-wrap,
-#colophon .ast-footer-social-1-wrap,
-#colophon .footer-social-inner-wrap.element-social-inner-wrap{
-  display: inline-flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 26px !important;
-
-  padding: 18px 26px !important;
-  border-radius: 12px !important;
-  background: rgba(6,14,18,.55) !important;
-  border: 1px solid rgba(0,240,255,.18) !important;
-
-  backdrop-filter: blur(14px) saturate(1.15);
-  -webkit-backdrop-filter: blur(14px) saturate(1.15);
-
-  box-shadow:
-    0 18px 44px rgba(0,0,0,.55),
-    0 0 26px rgba(0,240,255,.12);
-}
-
-/* OPTIONAL: keep each icon boxed (comment this block out if you want flat icons) */
-#colophon a.ast-builder-social-element{
-  background: rgba(6,14,18,.45) !important;
-  border: 1px solid rgba(0,240,255,.20) !important;
-  border-radius: 16px !important;
-}
-
