@@ -142,56 +142,20 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
   to   { transform: rotate(360deg); }
 }
 
-/* -----------------------------
-   CUSTOM CURSOR (cleaner base)
------------------------------- */
-
-/* hide default cursor when FX is enabled (JS adds .fx-cursor) */
-body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
-
+/* DIAMOND CURSOR SHAPE */
 .cursor-glow{
-  position: fixed;
-  left: 0; top: 0;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999999;
-  mix-blend-mode: screen;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
 
-  /* size + shape */
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-
-  /* tail controls updated by JS */
-  --tailLen: 28px;
-  --tailRot: 0deg;
-  --tailOpacity: .55;
-
-  background: radial-gradient(circle,
-    color-mix(in srgb, var(--accent) 92%, white 8%) 0%,
-    color-mix(in srgb, var(--accent) 55%, transparent 45%) 40%,
-    rgba(0,0,0,0) 72%
-  );
-
-  filter:
-    drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 85%, transparent))
-    drop-shadow(0 0 28px color-mix(in srgb, var(--accent) 60%, transparent));
+  /* make the cursor a diamond */
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
-/* tiny ring */
-.cursor-glow::before{
-  content:"";
-  position:absolute;
-  inset:-7px;
-  border-radius:999px;
-  border: 2px solid rgba(0,240,255,.35);
-  box-shadow: 0 0 18px rgba(0,240,255,.25);
-  opacity:.85;
-  animation: cursorPulse 1.7s ease-in-out infinite;
-}
-@keyframes cursorPulse{
-  0%,100%{ transform: scale(1); opacity:.7; }
-  50%{ transform: scale(1.08); opacity:1; }
+/* Tail should “un-rotate” so it points correctly */
+.cursor-glow .cursor-tail{
+  /* add this line (or replace existing transform line) */
+  transform: translate(-50%,-50%) rotate(calc(var(--tailRot) - 45deg)) translateX(8px);
 }
 
 /* tail */
