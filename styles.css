@@ -434,3 +434,56 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
     padding: 8px 10px !important;
   }
 }
+/* =========================
+   PATCH: MENU BIGGER AGAIN
+========================= */
+.ast-primary-header-bar .main-navigation .menu > li > a,
+.ast-above-header-bar .main-navigation .menu > li > a{
+  font-size: 24px !important;
+  padding: 14px 22px !important;
+}
+
+.ast-primary-header-bar .main-navigation .menu,
+.ast-above-header-bar .main-navigation .menu{
+  gap: 46px !important;
+  padding: 18px 30px !important;
+  border-radius: 10px !important;
+}
+
+/* =========================
+   PATCH: FOOTER SOCIAL LOOK
+   (center + tighter container)
+========================= */
+
+/* Center the whole social module */
+#colophon .ast-builder-layout-element,
+#colophon .ast-footer-social-wrap,
+#colophon .ast-footer-social-1-wrap,
+#colophon .footer-social-inner-wrap.element-social-inner-wrap{
+  justify-content: center !important;
+}
+
+/* Make the big glass bar not insanely wide */
+#colophon .ast-footer-social-wrap,
+#colophon .ast-footer-social-1-wrap,
+#colophon .footer-social-inner-wrap.element-social-inner-wrap{
+  width: min(980px, 92vw) !important;
+  margin: 0 auto !important;
+
+  padding: 22px 26px !important;
+  border-radius: 14px !important;
+}
+
+/* Ensure icon row is centered inside */
+#colophon .footer-social-inner-wrap.element-social-inner-wrap{
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+}
+
+/* Icons: consistent size + spacing */
+#colophon a.ast-builder-social-element{
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 18px !important;
+}
