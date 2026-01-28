@@ -1,8 +1,9 @@
 /* ======================================================
-   KRISI.SITE — FX PACK
+   KRISI.SITE — FX PACK (FINAL CLEAN)
    - Cursor tail + particles
-   - Menu: blip + whoosh + cyan fade transition
-   - Social: magical trill + orbit particles
+   - Cyan fade transition on internal nav
+   - One consistent “magical click” sound everywhere
+   - Social orbit particles + magical sound
 ====================================================== */
 
 function isMobileish() {
@@ -23,6 +24,7 @@ function ensureTransitionOverlay() {
   document.body.classList.add("pt-ready");
   return overlay;
 }
+
 function runPageTransition() {
   if (reducedMotion()) return Promise.resolve();
   ensureTransitionOverlay();
@@ -93,32 +95,34 @@ function initCursorFX() {
     requestAnimationFrame(loop);
   })();
 }
+
+/* ---------- sound FX ---------- */
 function initSoundFX() {
   const audioState = { ctx: null, unlocked: false };
 
-  const ensureContext = () => {
+  const ensureContext = async () => {
     if (!audioState.ctx) audioState.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioState.ctx.state === "suspended") audioState.ctx.resume();
+    if (audioState.ctx.state === "suspended") {
+      try { await audioState.ctx.resume(); } catch (e) {}
+    }
     audioState.unlocked = true;
   };
 
-  /* ----------------------
-     ONE CONSISTENT “MAGICAL CLICK”
-     (used everywhere)
-  ---------------------- */
+  /* One consistent magical click */
   const magicalClick = () => {
-    if (!audioState.unlocked) return;
+    if (!audioState.unlocked || !audioState.ctx) return;
+
     const ctx = audioState.ctx;
     const now = ctx.currentTime;
 
-    // master gain = volume control
+    // master volume (adjust 0.22–0.32)
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.30, now + 0.03);   // NOT subtle, not loud
+    gain.gain.exponentialRampToValueAtTime(0.28, now + 0.03);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
     gain.connect(ctx.destination);
 
-    // light “sparkle” stack
+    // sparkle stack
     const freqs = [640, 820, 980, 1240];
     freqs.forEach((f, i) => {
       const osc = ctx.createOscillator();
@@ -130,22 +134,20 @@ function initSoundFX() {
       osc.stop(now + i * 0.028 + 0.12);
     });
 
-    // subtle shimmer “air” (very short)
+    // tiny air shimmer
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.type = "sine";
     osc2.frequency.setValueAtTime(1600, now);
     gain2.gain.setValueAtTime(0.0001, now);
-    gain2.gain.exponentialRampToValueAtTime(0.07, now + 0.02);
+    gain2.gain.exponentialRampToValueAtTime(0.06, now + 0.02);
     gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
     osc2.connect(gain2).connect(ctx.destination);
     osc2.start(now);
     osc2.stop(now + 0.14);
   };
 
-  /* ----------------------
-     SOCIAL: orbit inject
-  ---------------------- */
+  /* Social orbit inject */
   const ensureOrbitLayer = (el) => {
     if (!el || el.querySelector(".orbit-layer")) return;
     const layer = document.createElement("div");
@@ -161,9 +163,6 @@ function initSoundFX() {
     el.appendChild(layer);
   };
 
-  /* ----------------------
-     Navigation helpers
-  ---------------------- */
   const shouldHandleLink = (a, e) => {
     if (!a || !a.href) return false;
     if (a.target === "_blank") return false;
@@ -179,7 +178,9 @@ function initSoundFX() {
   };
 
   const bindAll = () => {
-    // MENU clicks (same magical sound + transition)
+    ensureTransitionOverlay();
+
+    // MENU
     const menuSelector = ".ast-above-header-bar a, .ast-primary-header-bar a, .main-navigation a";
     document.querySelectorAll(menuSelector).forEach((a) => {
       a.addEventListener("click", async (e) => {
@@ -188,14 +189,12 @@ function initSoundFX() {
         if (!shouldHandleLink(a, e)) return;
         e.preventDefault();
 
-        // run your existing transition function if you have it
-        if (typeof runPageTransition === "function") await runPageTransition();
-
+        await runPageTransition();
         window.location.href = a.href;
       }, { passive: false });
     });
 
-    // Social: magical on hover + click (NO blip)
+    // SOCIAL
     const socialSelector = "#colophon a.ast-builder-social-element";
     document.querySelectorAll(socialSelector).forEach((a) => {
       ensureOrbitLayer(a);
@@ -203,31 +202,40 @@ function initSoundFX() {
       a.addEventListener("click", () => { ensureOrbitLayer(a); magicalClick(); }, { passive: true });
     });
 
-    // Other internal links: same magical sound + transition
+    // OTHER INTERNAL LINKS
     document.addEventListener("click", async (e) => {
       const a = e.target.closest("a");
       if (!a) return;
 
-      // already handled by menu handler above
-      if (a.matches(".ast-above-header-bar a, .ast-primary-header-bar a, .main-navigation a")) return;
+      if (a.matches(menuSelector)) return;
 
       magicalClick();
 
       if (!shouldHandleLink(a, e)) return;
       e.preventDefault();
 
-      if (typeof runPageTransition === "function") await runPageTransition();
+      await runPageTransition();
       window.location.href = a.href;
     }, { passive: false });
   };
 
-  const unlock = () => {
-    ensureContext();
+  const unlock = async () => {
+    await ensureContext();
+    // tiny confirmation in console (remove later)
+    console.log("Audio unlocked ✅");
     bindAll();
     window.removeEventListener("pointerdown", unlock);
     window.removeEventListener("keydown", unlock);
   };
 
+  // must be user gesture
   window.addEventListener("pointerdown", unlock, { passive: true });
   window.addEventListener("keydown", unlock, { passive: true });
 }
+
+/* ---------- BOOT ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("effects.js loaded ✅");
+  initCursorFX();
+  initSoundFX();
+});
