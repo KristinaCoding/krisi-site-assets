@@ -291,23 +291,13 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
 
 /* try to grab the actual row that holds icons */
 #colophon .footer-social-inner-wrap.element-social-inner-wrap{
-  display:flex !important;
   justify-content:center !important;
   align-items:center !important;
-  gap: 26px !important;
 
   width: min(900px, 92vw) !important;
   margin: 0 auto !important;
-
   padding: 22px 26px !important;
-  border-radius: 16px !important;
   background: var(--glass) !important;
-  border: 1px solid var(--stroke) !important;
-
-  backdrop-filter: blur(14px) saturate(1.15) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(1.15) !important;
-
-  box-shadow: var(--shadow), var(--glow) !important;
 }
 
 /* anchors = boxed icons */
