@@ -254,8 +254,8 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
 
 /* anchors = boxed icons */
 #colophon a.ast-builder-social-element{
-  width: 64px !important;
-  height: 64px !important;
+  width: 94px !important;
+  height: 94px !important;
  
    transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
   overflow: visible !important;
