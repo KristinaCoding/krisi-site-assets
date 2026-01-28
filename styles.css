@@ -1,9 +1,5 @@
 /* ======================================================
-   KRISI.SITE — FX PACK (CLEAN + SAFE)
-   Astra + Elementor
-   - Cursor tail + particles
-   - Page transition glow
-   - Social orbit particles
+   KRISI.SITE — FX PACK (CLEAN + BLACK BACKGROUND FIX)
 ====================================================== */
 
 :root{
@@ -11,234 +7,130 @@
   --text:#E6F1FF;
   --cyan:#00F0FF;
   --cyan2:#4DEEFF;
-
-  /* Accent can be changed via classes if you want later */
   --accent: var(--cyan);
   --accent2: var(--cyan2);
 }
 
-/* -----------------------------------
-   PAGE TRANSITION OVERLAY (cyan fade)
------------------------------------ */
+/* -----------------------------
+   FORCE EVERYWHERE BLACK
+------------------------------ */
+html, body{
+  background: #000 !important;
+  color: var(--text);
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* Astra/WordPress wrappers that often keep a “default” bg */
+#page,
+#content,
+.site,
+.site-content,
+.site-main,
+.content-area,
+.ast-container,
+.ast-container-fluid,
+.elementor,
+.elementor-section,
+.elementor-container,
+.e-con,
+.e-con-inner{
+  background: #000 !important;
+}
+
+/* Elementor sometimes paints overlays */
+.elementor-background-overlay,
+.elementor-section .elementor-background-overlay,
+.e-con .elementor-background-overlay{
+  background: transparent !important;
+}
+
+/* -----------------------------
+   PAGE TRANSITION OVERLAY
+------------------------------ */
 .page-transition{
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 99999999;
   opacity: 0;
-
   background:
-    radial-gradient(900px 500px at 50% 42%,
-      rgba(0,240,255,.20) 0%,
-      rgba(0,240,255,.10) 26%,
-      rgba(0,0,0,0) 62%
+    radial-gradient(900px 520px at 50% 42%,
+      rgba(0,240,255,.18) 0%,
+      rgba(0,240,255,.08) 28%,
+      rgba(0,0,0,0) 64%
     ),
-    linear-gradient(180deg,
-      rgba(0,0,0,0.0),
-      rgba(0,0,0,0.75)
-    );
-
+    linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.78));
   transition: opacity .28s ease;
   backdrop-filter: blur(1px);
 }
+body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
 
-body.pt-ready.pt-leaving .page-transition{
-  opacity: 1;
-}
-
-/* -----------------------------------
-   CURSOR GLOW + TAIL + PARTICLES
------------------------------------ */
-.cursor-glow{
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999999;
-  mix-blend-mode: screen;
-
-  /* Tail controls updated by JS */
-  --tailLen: 28px;
-  --tailRot: 0deg;
-  --tailOpacity: .55;
-
-  background: radial-gradient(circle,
-    color-mix(in srgb, var(--accent) 92%, white 8%) 0%,
-    color-mix(in srgb, var(--accent) 60%, transparent 40%) 38%,
-    rgba(0,0,0,0) 72%
-  );
-
-  filter:
-    drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 95%, transparent))
-    drop-shadow(0 0 34px color-mix(in srgb, var(--accent) 70%, transparent))
-    drop-shadow(0 0 90px color-mix(in srgb, var(--accent) 45%, transparent));
-}
-
-/* Outer ring pulse */
-.cursor-glow::before{
-  content:"";
-  position:absolute;
-  inset:-8px;
-  border-radius:999px;
-  border: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
-  box-shadow:
-    0 0 18px color-mix(in srgb, var(--accent) 70%, transparent),
-    inset 0 0 18px color-mix(in srgb, var(--accent) 55%, transparent);
-  opacity:.9;
-  animation: cursorRingPulse 1.7s ease-in-out infinite;
-}
-@keyframes cursorRingPulse{
-  0%,100% { transform: scale(1); opacity:.75; }
-  50%     { transform: scale(1.08); opacity:1; }
-}
-
-/* Inner dot */
-.cursor-glow::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:50%;
-  width: 8px;
-  height: 8px;
-  border-radius:999px;
-  transform: translate(-50%, -50%);
-  background: color-mix(in srgb, var(--accent) 85%, white 15%);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 90%, transparent);
-  opacity: .95;
-}
-
-/* Optional star (JS injects) */
-.cursor-glow .cursor-star{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width: 10px;
-  height: 10px;
-  transform: translate(-50%,-50%);
-  opacity: .9;
-  pointer-events:none;
-  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 80%, transparent));
-  animation: starSpin 1.6s linear infinite;
-}
-.cursor-glow .cursor-star::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: color-mix(in srgb, var(--accent) 85%, white 15%);
-  clip-path: polygon(
-    50% 0%,
-    61% 35%,
-    98% 35%,
-    68% 57%,
-    79% 91%,
-    50% 70%,
-    21% 91%,
-    32% 57%,
-    2% 35%,
-    39% 35%
-  );
-}
-@keyframes starSpin{
-  from{ transform: translate(-50%,-50%) rotate(0deg); }
-  to  { transform: translate(-50%,-50%) rotate(360deg); }
-}
-
-/* Tail (JS injects) */
-.cursor-glow .cursor-tail{
-  position:absolute;
-  left:50%;
-  top:50%;
-  height: 10px;
-  width: var(--tailLen);
-  transform-origin: 0% 50%;
-  transform: translate(-50%,-50%) rotate(var(--tailRot)) translateX(10px);
-  opacity: var(--tailOpacity);
-  pointer-events:none;
-  border-radius: 999px;
-
-  background: linear-gradient(90deg,
-    color-mix(in srgb, var(--accent) 85%, white 15%) 0%,
-    rgba(0,0,0,0) 85%
-  );
-
-  filter:
-    blur(0.2px)
-    drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 70%, transparent));
-}
-
-/* Trailing particles (JS creates .cursor-particle) */
-.cursor-particle{
-  position: fixed;
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  pointer-events: none;
-  left: 0;
-  top: 0;
-  transform: translate(-50%, -50%);
-  z-index: 9999998;
-  mix-blend-mode: screen;
-
-  background: radial-gradient(circle,
-    color-mix(in srgb, var(--accent) 85%, white 15%) 0%,
-    rgba(0,0,0,0) 70%
-  );
-
-  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 75%, transparent));
-  opacity: 0.95;
-  animation: particleFade 620ms ease-out forwards;
-}
-@keyframes particleFade{
-  0%   { opacity: 0.95; transform: translate(-50%,-50%) scale(1); }
-  100% { opacity: 0;    transform: translate(-50%,-50%) scale(0.2); }
-}
-
-/* -----------------------------------
-   SOCIAL ORBIT PARTICLES (on hover)
-   JS injects: .orbit-layer > .orbit-spin > .orbit-dot
------------------------------------ */
+/* -----------------------------
+   SOCIAL ICONS: nicer “glass” + orbit
+------------------------------ */
 #colophon a.ast-builder-social-element{
-  position: relative; /* needed for orbit layer */
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 16px !important;
+  background: rgba(6,14,18,.55) !important;
+  border: 1px solid rgba(0,240,255,.22) !important;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+  overflow: visible !important;
 }
 
+#colophon a.ast-builder-social-element:hover{
+  transform: translateY(-2px) scale(1.08);
+  box-shadow:
+    0 0 18px rgba(0,240,255,.35),
+    0 0 50px rgba(0,240,255,.18);
+  filter: drop-shadow(0 0 14px rgba(0,240,255,.35));
+}
+
+#colophon a.ast-builder-social-element svg{
+  width: 22px !important;
+  height: 22px !important;
+}
+
+/* orbit layer (JS injects) */
 .orbit-layer{
   position:absolute;
   left:50%;
   top:50%;
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
   transform: translate(-50%, -50%);
   pointer-events:none;
   z-index: 3;
   opacity: 0;
   transition: opacity .18s ease;
   filter: drop-shadow(0 0 14px rgba(0,240,255,.55));
+  mix-blend-mode: screen;
 }
-
-#colophon a.ast-builder-social-element:hover .orbit-layer{
-  opacity: 1;
-}
+#colophon a.ast-builder-social-element:hover .orbit-layer{ opacity: 1; }
 
 .orbit-spin{
   position:absolute;
   inset:0;
-  animation: orbitSpin 1.15s linear infinite;
+  animation: orbitSpin 1.1s linear infinite;
 }
-.orbit-spin:nth-child(2){ animation-duration: 1.55s; opacity:.85; }
-.orbit-spin:nth-child(3){ animation-duration:  2.0s; opacity:.75; }
+.orbit-spin:nth-child(2){ animation-duration: 1.55s; opacity:.8; }
+.orbit-spin:nth-child(3){ animation-duration:  2.1s; opacity:.65; }
 
 .orbit-dot{
   position:absolute;
   left:50%;
   top:50%;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 999px;
-  transform: translate(-50%, -50%) translateX(20px);
+  transform: translate(-50%, -50%) translateX(24px);
   background: rgba(0,240,255,.95);
   box-shadow:
     0 0 10px rgba(0,240,255,.95),
@@ -250,15 +142,110 @@ body.pt-ready.pt-leaving .page-transition{
   to   { transform: rotate(360deg); }
 }
 
-/* Reduced motion safety */
+/* -----------------------------
+   CUSTOM CURSOR (cleaner base)
+------------------------------ */
+
+/* hide default cursor when FX is enabled (JS adds .fx-cursor) */
+body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
+
+.cursor-glow{
+  position: fixed;
+  left: 0; top: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999999;
+  mix-blend-mode: screen;
+
+  /* size + shape */
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+
+  /* tail controls updated by JS */
+  --tailLen: 28px;
+  --tailRot: 0deg;
+  --tailOpacity: .55;
+
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent) 92%, white 8%) 0%,
+    color-mix(in srgb, var(--accent) 55%, transparent 45%) 40%,
+    rgba(0,0,0,0) 72%
+  );
+
+  filter:
+    drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 85%, transparent))
+    drop-shadow(0 0 28px color-mix(in srgb, var(--accent) 60%, transparent));
+}
+
+/* tiny ring */
+.cursor-glow::before{
+  content:"";
+  position:absolute;
+  inset:-7px;
+  border-radius:999px;
+  border: 2px solid rgba(0,240,255,.35);
+  box-shadow: 0 0 18px rgba(0,240,255,.25);
+  opacity:.85;
+  animation: cursorPulse 1.7s ease-in-out infinite;
+}
+@keyframes cursorPulse{
+  0%,100%{ transform: scale(1); opacity:.7; }
+  50%{ transform: scale(1.08); opacity:1; }
+}
+
+/* tail */
+.cursor-glow .cursor-tail{
+  position:absolute;
+  left:50%;
+  top:50%;
+  height: 8px;
+  width: var(--tailLen);
+  transform-origin: 0% 50%;
+  transform: translate(-50%,-50%) rotate(var(--tailRot)) translateX(8px);
+  opacity: var(--tailOpacity);
+  pointer-events:none;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    rgba(0,240,255,.9) 0%,
+    rgba(0,240,255,.0) 85%
+  );
+  filter: drop-shadow(0 0 14px rgba(0,240,255,.45));
+}
+
+/* trailing particles */
+.cursor-particle{
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  pointer-events: none;
+  left: 0; top: 0;
+  transform: translate(-50%, -50%);
+  z-index: 9999998;
+  mix-blend-mode: screen;
+
+  background: radial-gradient(circle,
+    rgba(0,240,255,.9) 0%,
+    rgba(0,0,0,0) 70%
+  );
+  filter: drop-shadow(0 0 12px rgba(0,240,255,.55));
+  opacity: .95;
+  animation: particleFade 620ms ease-out forwards;
+}
+@keyframes particleFade{
+  0%   { opacity: .95; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 0;   transform: translate(-50%,-50%) scale(.2); }
+}
+
+/* Reduced motion + mobile */
 @media (prefers-reduced-motion: reduce){
   .cursor-glow, .cursor-particle, .page-transition, .orbit-layer, .orbit-spin{
     animation: none !important;
     transition: none !important;
   }
 }
-
-/* Mobile perf: disable heavy FX */
 @media (max-width: 768px){
   .cursor-glow, .cursor-particle, .orbit-layer{ display:none !important; }
+  body.fx-cursor, body.fx-cursor a{ cursor: auto !important; }
 }
