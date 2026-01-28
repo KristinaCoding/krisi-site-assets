@@ -1,14 +1,11 @@
 /* ======================================================
-   KRISI.SITE — CYBER GLASS UI (CLEAN FINAL)
+   KRISI.SITE — CYBER GLASS UI (CLEAN FINAL v2)
    Astra + Elementor
-
-   Includes:
-   - True black base
-   - Header menu: ONE glass bar
-   - Dropdown glass
-   - Footer social: ONE glass bar + boxed icons
-   - Cursor glow + tail + particles
-   - Page transition overlay
+   FIXES:
+   - removes "current item giant pill" (Home box)
+   - keeps ONE glass bar
+   - current item becomes subtle glow + underline (not a huge panel)
+   - footer socials: removes extra outlines / weird lines, centers properly
 ====================================================== */
 
 :root{
@@ -82,11 +79,10 @@ a{ color:inherit; text-decoration:none !important; }
 }
 
 /* ======================================================
-   MENU: ONE GLASS BAR
-   Targets Astra’s real UL variants
+   MENU: ONE GLASS BAR (UL)
 ====================================================== */
 
-/* remove old wrapper styling (prevents “double boxes”) */
+/* remove wrapper styling */
 .ast-primary-header-bar .main-navigation,
 .ast-above-header-bar .main-navigation,
 .ast-primary-header-bar .main-header-bar-navigation,
@@ -97,7 +93,7 @@ a{ color:inherit; text-decoration:none !important; }
   padding: 0 !important;
 }
 
-/* the bar itself sits on the UL */
+/* bar itself */
 .ast-primary-header-bar .main-header-menu,
 .ast-above-header-bar .main-header-menu,
 .ast-primary-header-bar ul.ast-nav-menu,
@@ -108,12 +104,14 @@ a{ color:inherit; text-decoration:none !important; }
   align-items:center !important;
   justify-content:center !important;
 
-  width:auto !important;
-  max-width:max-content !important;
+  list-style: none !important;
   margin: 0 auto !important;
+  padding: 16px 30px !important;
 
-  gap: 46px !important;
-  padding: 18px 34px !important;
+  width: fit-content !important;
+  max-width: calc(100vw - 24px) !important;
+
+  gap: 42px !important;
 
   border-radius: var(--radius) !important;
   background: var(--glass) !important;
@@ -125,50 +123,84 @@ a{ color:inherit; text-decoration:none !important; }
   box-shadow: var(--shadow), var(--glow) !important;
 }
 
-/* menu links: bigger, clean, no individual pills */
+/* important: no per-item background blocks by default */
+.ast-primary-header-bar .main-header-menu > li,
+.ast-above-header-bar .main-header-menu > li,
+.ast-primary-header-bar ul.ast-nav-menu > li,
+.ast-above-header-bar ul.ast-nav-menu > li,
+.ast-primary-header-bar ul.menu > li,
+.ast-above-header-bar ul.menu > li{
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* links: tighter so current item doesn't become a giant panel */
 .ast-primary-header-bar .main-header-menu > li > a,
 .ast-above-header-bar .main-header-menu > li > a,
 .ast-primary-header-bar ul.ast-nav-menu > li > a,
 .ast-above-header-bar ul.ast-nav-menu > li > a,
 .ast-primary-header-bar ul.menu > li > a,
 .ast-above-header-bar ul.menu > li > a{
-  font-size: 24px !important;
+  position: relative !important;
+
+  font-size: 22px !important;
   font-weight: 650 !important;
   letter-spacing: .6px !important;
 
-  padding: 14px 22px !important;
+  padding: 10px 14px !important;   /* <-- key fix */
   border-radius: 12px !important;
 
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
 
-  transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+  transition: background .2s ease, box-shadow .2s ease, transform .2s ease, color .2s ease;
 }
 
+/* hover: subtle glass glow */
 .ast-primary-header-bar .main-header-menu > li > a:hover,
 .ast-above-header-bar .main-header-menu > li > a:hover,
 .ast-primary-header-bar ul.ast-nav-menu > li > a:hover,
 .ast-above-header-bar ul.ast-nav-menu > li > a:hover,
 .ast-primary-header-bar ul.menu > li > a:hover,
 .ast-above-header-bar ul.menu > li > a:hover{
-  background: rgba(0,240,255,.10) !important;
+  background: rgba(0,240,255,.08) !important;
   box-shadow:
-    0 0 14px rgba(0,240,255,.22),
+    0 0 14px rgba(0,240,255,.20),
     0 0 34px rgba(0,240,255,.10) !important;
   transform: translateY(-1px);
 }
 
+/* CURRENT ITEM: remove big pill, use underline + gentle glow */
 .ast-primary-header-bar .main-header-menu > li.current-menu-item > a,
 .ast-above-header-bar .main-header-menu > li.current-menu-item > a,
 .ast-primary-header-bar ul.ast-nav-menu > li.current-menu-item > a,
 .ast-above-header-bar ul.ast-nav-menu > li.current-menu-item > a,
 .ast-primary-header-bar ul.menu > li.current-menu-item > a,
 .ast-above-header-bar ul.menu > li.current-menu-item > a{
-  background: rgba(0,240,255,.14) !important;
-  box-shadow:
-    0 0 18px rgba(0,240,255,.30),
-    0 0 48px rgba(0,240,255,.14) !important;
+  background: transparent !important;         /* <-- key fix */
+  box-shadow: none !important;               /* <-- key fix */
+  color: var(--cyan) !important;
+  text-shadow: 0 0 18px rgba(0,240,255,.35);
+}
+
+.ast-primary-header-bar .main-header-menu > li.current-menu-item > a::after,
+.ast-above-header-bar .main-header-menu > li.current-menu-item > a::after,
+.ast-primary-header-bar ul.ast-nav-menu > li.current-menu-item > a::after,
+.ast-above-header-bar ul.ast-nav-menu > li.current-menu-item > a::after,
+.ast-primary-header-bar ul.menu > li.current-menu-item > a::after,
+.ast-above-header-bar ul.menu > li.current-menu-item > a::after{
+  content:"";
+  position:absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 6px;
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, rgba(0,240,255,0), rgba(0,240,255,.95), rgba(0,240,255,0));
+  box-shadow: 0 0 18px rgba(0,240,255,.45);
+  opacity: .9;
 }
 
 /* arrow */
@@ -193,7 +225,7 @@ a{ color:inherit; text-decoration:none !important; }
   border: 1px solid var(--stroke) !important;
   border-radius: 16px !important;
 
-  padding: 10px 10px !important;
+  padding: 10px !important;
   min-width: 240px !important;
 
   backdrop-filter: blur(14px) saturate(1.15) !important;
@@ -245,18 +277,30 @@ a{ color:inherit; text-decoration:none !important; }
 body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
 
 /* ======================================================
-   FOOTER SOCIAL: ONE GLASS BAR (clean + centered)
+   FOOTER SOCIAL: ONE GLASS BAR (robust selectors)
 ====================================================== */
+
+/* reset common Astra/Elementor wrappers to avoid “double boxes” */
 #colophon .ast-footer-social-wrap,
-#colophon .ast-footer-social-1-wrap{
+#colophon .ast-footer-social-1-wrap,
+#colophon .ast-builder-social,
+#colophon .ast-builder-layout-element,
+#colophon .ast-builder-grid-row-container{
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
-  padding: 0 !important;
 }
 
+/* the bar container (works across Astra variants) */
+#colophon .footer-social-inner-wrap.element-social-inner-wrap,
+#colophon .ast-builder-social .ast-social-stack,
+#colophon .ast-builder-social .ast-builder-social-element{
+  /* if Astra uses different inner containers, we still style the anchor below */
+}
+
+/* try to grab the actual row that holds icons */
 #colophon .footer-social-inner-wrap.element-social-inner-wrap{
-  display:inline-flex !important;
+  display:flex !important;
   justify-content:center !important;
   align-items:center !important;
   gap: 26px !important;
@@ -275,11 +319,12 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
   box-shadow: var(--shadow), var(--glow) !important;
 }
 
+/* anchors = boxed icons */
 #colophon a.ast-builder-social-element{
-  position: relative;
+  position: relative !important;
   display:inline-flex !important;
-  justify-content:center;
-  align-items:center;
+  justify-content:center !important;
+  align-items:center !important;
 
   width: 64px !important;
   height: 64px !important;
@@ -288,8 +333,18 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
   background: rgba(6,14,18,.45) !important;
   border: 1px solid rgba(0,240,255,.20) !important;
 
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+
   transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
   overflow: visible !important;
+}
+
+/* kill any weird pseudo-lines some themes add */
+#colophon a.ast-builder-social-element::before,
+#colophon a.ast-builder-social-element::after{
+  content: none !important;
 }
 
 #colophon a.ast-builder-social-element:hover{
@@ -337,7 +392,7 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
 @keyframes orbitSpin{ from{ transform: rotate(0deg);} to{ transform: rotate(360deg);} }
 
 /* ======================================================
-   CURSOR (JS adds body.fx-cursor, and inserts cursor-glow)
+   CURSOR (JS adds body.fx-cursor)
 ====================================================== */
 body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
 
@@ -435,8 +490,8 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   .ast-above-header-bar ul.ast-nav-menu,
   .ast-primary-header-bar ul.menu,
   .ast-above-header-bar ul.menu{
-    gap: 18px !important;
-    padding: 14px 14px !important;
+    gap: 16px !important;
+    padding: 12px 14px !important;
   }
 
   .ast-primary-header-bar .main-header-menu > li > a,
