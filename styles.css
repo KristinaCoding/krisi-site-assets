@@ -249,3 +249,37 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
   .cursor-glow, .cursor-particle, .orbit-layer{ display:none !important; }
   body.fx-cursor, body.fx-cursor a{ cursor: auto !important; }
 }
+
+/* ============================
+   FIX SERVICES DROPDOWN TEXT
+============================ */
+
+/* Force submenu layout back to normal horizontal text */
+.main-navigation ul ul,
+.ast-primary-header-bar .sub-menu,
+.ast-above-header-bar .sub-menu{
+  writing-mode: horizontal-tb !important;
+  transform: none !important;
+  flex-direction: column !important;
+  white-space: nowrap !important;
+  min-width: 220px;
+}
+
+/* Ensure submenu links display correctly */
+.main-navigation ul ul li a,
+.ast-primary-header-bar .sub-menu li a,
+.ast-above-header-bar .sub-menu li a{
+  display: block !important;
+  writing-mode: horizontal-tb !important;
+  letter-spacing: normal !important;
+  text-orientation: mixed !important;
+  padding: 12px 20px !important;
+  text-align: left !important;
+}
+
+/* Prevent accidental letter stacking */
+.main-navigation ul ul li,
+.ast-primary-header-bar .sub-menu li{
+  width: 100% !important;
+}
+
