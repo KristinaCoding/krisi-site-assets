@@ -384,4 +384,114 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
     0 18px 44px rgba(0,0,0,.55),
     0 0 26px rgba(0,240,255,.12);
 }
+/* ======================================================
+   FIX: ONE GLASS PANEL FOR MENU + ONE GLASS PANEL FOR SOCIAL
+   (Overrides previous menu/social rules)
+====================================================== */
+
+/* -----------------------------
+   MENU: one glass rectangle
+------------------------------ */
+
+/* Reset wrappers so they don't fight layout */
+.ast-primary-header-bar .main-header-bar-navigation,
+.ast-primary-header-bar .main-navigation,
+.ast-above-header-bar .main-header-bar-navigation,
+.ast-above-header-bar .main-navigation{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Put the glass panel on the UL (the real menu row) */
+.ast-primary-header-bar .main-navigation .menu,
+.ast-above-header-bar .main-navigation .menu{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 28px !important;
+
+  padding: 14px 20px !important;
+  border-radius: 10px !important; /* 5–10px like you want */
+  background: rgba(6,14,18,.55) !important;
+  border: 1px solid rgba(0,240,255,.18) !important;
+
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.55),
+    0 0 26px rgba(0,240,255,.12);
+}
+
+/* Make links big but NOT separate pill boxes */
+.ast-primary-header-bar .main-navigation .menu > li > a,
+.ast-above-header-bar .main-navigation .menu > li > a{
+  font-size: 22px !important;
+  font-weight: 650 !important;
+  letter-spacing: .6px !important;
+
+  padding: 10px 14px !important;   /* click area */
+  border-radius: 10px !important;  /* small rounding for hover */
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Hover: subtle local glow inside the big panel */
+.ast-primary-header-bar .main-navigation .menu > li > a:hover,
+.ast-above-header-bar .main-navigation .menu > li > a:hover{
+  background: rgba(0,240,255,.10) !important;
+  box-shadow:
+    0 0 14px rgba(0,240,255,.22),
+    0 0 34px rgba(0,240,255,.10);
+}
+
+/* Active item */
+.ast-primary-header-bar .main-navigation .menu > li.current-menu-item > a,
+.ast-above-header-bar .main-navigation .menu > li.current-menu-item > a{
+  background: rgba(0,240,255,.16) !important;
+  box-shadow:
+    0 0 18px rgba(0,240,255,.32),
+    0 0 44px rgba(0,240,255,.14);
+}
+
+/* Dropdown arrow size */
+.ast-icon.icon-arrow svg{
+  width: 16px !important;
+  height: 16px !important;
+  transform: translateY(1px);
+}
+
+/* -----------------------------
+   SOCIAL: one glass rectangle
+------------------------------ */
+#colophon .ast-footer-social-wrap,
+#colophon .ast-footer-social-1-wrap,
+#colophon .footer-social-inner-wrap.element-social-inner-wrap{
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 26px !important;
+
+  padding: 18px 26px !important;
+  border-radius: 12px !important;
+  background: rgba(6,14,18,.55) !important;
+  border: 1px solid rgba(0,240,255,.18) !important;
+
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.55),
+    0 0 26px rgba(0,240,255,.12);
+}
+
+/* OPTIONAL: keep each icon boxed (comment this block out if you want flat icons) */
+#colophon a.ast-builder-social-element{
+  background: rgba(6,14,18,.45) !important;
+  border: 1px solid rgba(0,240,255,.20) !important;
+  border-radius: 16px !important;
+}
 
