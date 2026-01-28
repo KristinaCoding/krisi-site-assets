@@ -1,8 +1,8 @@
 /* ======================================================
-   KRISI.SITE — FX PACK (FINAL CLEAN)
+   KRISI.SITE — FX PACK (CONSISTENT AUDIO)
    - Cursor tail + particles
    - Cyan fade transition on internal nav
-   - One consistent “magical click” sound everywhere
+   - One consistent “magical click” everywhere
    - Social orbit particles + magical sound
 ====================================================== */
 
@@ -96,35 +96,38 @@ function initCursorFX() {
   })();
 }
 
-/* ---------- sound FX ---------- */
+/* ---------- sound FX (robust) ---------- */
 function initSoundFX() {
-  const audioState = { ctx: null, unlocked: false };
+  const audio = { ctx: null, unlocked: false };
 
-  const ensureContext = async () => {
-    if (!audioState.ctx) audioState.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioState.ctx.state === "suspended") {
-      try { await audioState.ctx.resume(); } catch (e) {}
-    }
-    audioState.unlocked = true;
+  const createCtx = () => {
+    if (!audio.ctx) audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return audio.ctx;
   };
 
-  /* One consistent magical click */
-  const magicalClick = () => {
-    if (!audioState.unlocked || !audioState.ctx) return;
+  const unlockAudio = async () => {
+    const ctx = createCtx();
+    if (ctx.state === "suspended") {
+      try { await ctx.resume(); } catch (e) {}
+    }
+    audio.unlocked = (ctx.state === "running");
+    return audio.unlocked;
+  };
 
-    const ctx = audioState.ctx;
+  const magicalClick = () => {
+    if (!audio.unlocked) return;
+    const ctx = audio.ctx;
+    if (!ctx) return;
+
     const now = ctx.currentTime;
 
-    // master volume (adjust 0.22–0.32)
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.28, now + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.26, now + 0.03); // tuned
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
     gain.connect(ctx.destination);
 
-    // sparkle stack
-    const freqs = [640, 820, 980, 1240];
-    freqs.forEach((f, i) => {
+    [640, 820, 980, 1240].forEach((f, i) => {
       const osc = ctx.createOscillator();
       osc.type = i % 2 ? "triangle" : "sine";
       osc.frequency.setValueAtTime(f, now + i * 0.028);
@@ -134,7 +137,6 @@ function initSoundFX() {
       osc.stop(now + i * 0.028 + 0.12);
     });
 
-    // tiny air shimmer
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.type = "sine";
@@ -147,7 +149,6 @@ function initSoundFX() {
     osc2.stop(now + 0.14);
   };
 
-  /* Social orbit inject */
   const ensureOrbitLayer = (el) => {
     if (!el || el.querySelector(".orbit-layer")) return;
     const layer = document.createElement("div");
@@ -177,65 +178,69 @@ function initSoundFX() {
     return true;
   };
 
-  const bindAll = () => {
-    ensureTransitionOverlay();
+  // IMPORTANT: use ONE handler path, not duplicates
+  const menuSelector = ".ast-above-header-bar a, .ast-primary-header-bar a, .main-navigation .menu > li > a";
+  const socialSelector = "#colophon a.ast-builder-social-element";
 
-    // MENU
-    const menuSelector = ".ast-above-header-bar a, .ast-primary-header-bar a, .main-navigation a";
-    document.querySelectorAll(menuSelector).forEach((a) => {
-      a.addEventListener("click", async (e) => {
-        magicalClick();
+  // Bind clicks now; unlock+play on first click if needed
+  const onAnyClick = async (e) => {
+    const a = e.target.closest("a");
 
-        if (!shouldHandleLink(a, e)) return;
-        e.preventDefault();
+    // Always attempt unlock on first user interaction
+    if (!audio.unlocked) {
+      createCtx();
+      await unlockAudio();
+    }
 
-        await runPageTransition();
-        window.location.href = a.href;
-      }, { passive: false });
-    });
+    // Social hover doesn't count as click; here is click only
+    if (audio.unlocked) magicalClick();
 
-    // SOCIAL
-    const socialSelector = "#colophon a.ast-builder-social-element";
-    document.querySelectorAll(socialSelector).forEach((a) => {
-      ensureOrbitLayer(a);
-      a.addEventListener("mouseenter", () => { ensureOrbitLayer(a); magicalClick(); }, { passive: true });
-      a.addEventListener("click", () => { ensureOrbitLayer(a); magicalClick(); }, { passive: true });
-    });
-
-    // OTHER INTERNAL LINKS
-    document.addEventListener("click", async (e) => {
-      const a = e.target.closest("a");
-      if (!a) return;
-
-      if (a.matches(menuSelector)) return;
-
-      magicalClick();
-
-      if (!shouldHandleLink(a, e)) return;
+    // If it's a nav link we want transition for:
+    if (a && shouldHandleLink(a, e)) {
+      // Avoid double handling: only intercept internal navigation
       e.preventDefault();
-
       await runPageTransition();
       window.location.href = a.href;
-    }, { passive: false });
+    }
   };
 
-  const unlock = async () => {
-    await ensureContext();
-    // tiny confirmation in console (remove later)
-    console.log("Audio unlocked ✅");
-    bindAll();
-    window.removeEventListener("pointerdown", unlock);
-    window.removeEventListener("keydown", unlock);
+  // Menu links: intercept + sound
+  document.querySelectorAll(menuSelector).forEach((a) => {
+    a.addEventListener("click", onAnyClick, { passive: false });
+  });
+
+  // Social: hover + click (hover only after unlock)
+  const bindSocial = () => {
+    document.querySelectorAll(socialSelector).forEach((a) => {
+      ensureOrbitLayer(a);
+
+      a.addEventListener("mouseenter", async () => {
+        if (!audio.unlocked) return; // hover sound only once unlocked
+        magicalClick();
+      }, { passive: true });
+
+      a.addEventListener("click", onAnyClick, { passive: false });
+    });
   };
 
-  // must be user gesture
-  window.addEventListener("pointerdown", unlock, { passive: true });
-  window.addEventListener("keydown", unlock, { passive: true });
+  bindSocial();
+
+  // Other internal links anywhere (but skip menu/social because they already have handlers)
+  document.addEventListener("click", async (e) => {
+    const a = e.target.closest("a");
+    if (!a) return;
+
+    if (a.matches(menuSelector) || a.matches(socialSelector)) return;
+
+    await onAnyClick(e);
+  }, { passive: false });
+
+  // Prepare overlay early
+  ensureTransitionOverlay();
 }
 
 /* ---------- BOOT ---------- */
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("effects.js loaded ✅");
   initCursorFX();
   initSoundFX();
 });
