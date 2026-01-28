@@ -267,23 +267,6 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
   content: none !important;
 }
 
-#colophon a.ast-builder-social-element:hover{
-  transform: translateY(-2px) scale(1.08);
-
-  background: rgba(0,240,255,.08) !important;
-
-  box-shadow:
-    0 0 18px rgba(0,240,255,.35),
-    0 0 50px rgba(0,240,255,.18);
-
-  filter: drop-shadow(0 0 14px rgba(0,240,255,.35));
-
-   backdrop-filter: blur(12px) saturate(1.35);
--webkit-backdrop-filter: blur(12px) saturate(1.35);
-
-}
-
-
 #colophon a.ast-builder-social-element svg{
   width: 22px !important;
   height: 22px !important;
