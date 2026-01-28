@@ -1,9 +1,9 @@
 /* ======================================================
-   KRISI.SITE — FX PACK (CONSISTENT AUDIO)
+   KRISI.SITE — FX PACK (CLEAN FINAL)
    - Cursor tail + particles
-   - Cyan fade transition on internal nav
-   - One consistent “magical click” everywhere
-   - Social orbit particles + magical sound
+   - Cyan fade transition on internal navigation
+   - One consistent magical sound everywhere
+   - Social orbit particles
 ====================================================== */
 
 function isMobileish() {
@@ -96,8 +96,8 @@ function initCursorFX() {
   })();
 }
 
-/* ---------- sound FX (robust) ---------- */
-function initSoundFX() {
+/* ---------- audio + orbit ---------- */
+function initSoundAndNavFX() {
   const audio = { ctx: null, unlocked: false };
 
   const createCtx = () => {
@@ -115,15 +115,15 @@ function initSoundFX() {
   };
 
   const magicalClick = () => {
-    if (!audio.unlocked) return;
-    const ctx = audio.ctx;
-    if (!ctx) return;
+    if (!audio.unlocked || !audio.ctx) return;
 
+    const ctx = audio.ctx;
     const now = ctx.currentTime;
 
+    // volume (0.22–0.30 sweet spot)
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.26, now + 0.03); // tuned
+    gain.gain.exponentialRampToValueAtTime(0.26, now + 0.03);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
     gain.connect(ctx.destination);
 
@@ -178,69 +178,54 @@ function initSoundFX() {
     return true;
   };
 
-  // IMPORTANT: use ONE handler path, not duplicates
-  const menuSelector = ".ast-above-header-bar a, .ast-primary-header-bar a, .main-navigation .menu > li > a";
+  // Astra nav + general internal links
+  const menuSelector = ".ast-primary-header-bar a, .ast-above-header-bar a, .main-navigation a, .ast-nav-menu a, .main-header-menu a";
   const socialSelector = "#colophon a.ast-builder-social-element";
 
-  // Bind clicks now; unlock+play on first click if needed
-  const onAnyClick = async (e) => {
+  const handleClick = async (e) => {
     const a = e.target.closest("a");
 
-    // Always attempt unlock on first user interaction
+    // ensure unlocked on first user interaction
     if (!audio.unlocked) {
       createCtx();
       await unlockAudio();
     }
 
-    // Social hover doesn't count as click; here is click only
     if (audio.unlocked) magicalClick();
 
-    // If it's a nav link we want transition for:
     if (a && shouldHandleLink(a, e)) {
-      // Avoid double handling: only intercept internal navigation
       e.preventDefault();
       await runPageTransition();
       window.location.href = a.href;
     }
   };
 
-  // Menu links: intercept + sound
+  // prepare overlay early
+  ensureTransitionOverlay();
+
+  // bind menu links
   document.querySelectorAll(menuSelector).forEach((a) => {
-    a.addEventListener("click", onAnyClick, { passive: false });
+    a.addEventListener("click", handleClick, { passive: false });
   });
 
-  // Social: hover + click (hover only after unlock)
-  const bindSocial = () => {
-    document.querySelectorAll(socialSelector).forEach((a) => {
-      ensureOrbitLayer(a);
+  // bind socials
+  document.querySelectorAll(socialSelector).forEach((a) => {
+    ensureOrbitLayer(a);
+    a.addEventListener("mouseenter", () => { if (audio.unlocked) magicalClick(); }, { passive: true });
+    a.addEventListener("click", handleClick, { passive: false });
+  });
 
-      a.addEventListener("mouseenter", async () => {
-        if (!audio.unlocked) return; // hover sound only once unlocked
-        magicalClick();
-      }, { passive: true });
-
-      a.addEventListener("click", onAnyClick, { passive: false });
-    });
-  };
-
-  bindSocial();
-
-  // Other internal links anywhere (but skip menu/social because they already have handlers)
-  document.addEventListener("click", async (e) => {
+  // bind other internal links, avoid double-binding
+  document.addEventListener("click", (e) => {
     const a = e.target.closest("a");
     if (!a) return;
-
     if (a.matches(menuSelector) || a.matches(socialSelector)) return;
-
-    await onAnyClick(e);
+    handleClick(e);
   }, { passive: false });
-
-  // Prepare overlay early
-  ensureTransitionOverlay();
 }
 
 /* ---------- BOOT ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   initCursorFX();
-  initSoundFX();
+  initSoundAndNavFX();
 });
