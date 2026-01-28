@@ -504,3 +504,52 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
     padding: 8px 10px !important;
   }
 }
+/* ======================================================
+   KILL ALL SOCIAL BORDERS (Astra/Elementor footer)
+   - removes borders, outlines, pseudo borders, svg strokes
+====================================================== */
+
+/* 1) Kill borders/outline/box-shadow on the clickable icon */
+#colophon a.ast-builder-social-element,
+#colophon a.ast-builder-social-element:focus,
+#colophon a.ast-builder-social-element:focus-visible,
+#colophon .ast-builder-social-element,
+#colophon .ast-footer-social-wrap a,
+#colophon .ast-footer-social-1-wrap a{
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background-clip: padding-box !important;
+}
+
+/* 2) Kill any pseudo elements that draw lines/frames */
+#colophon a.ast-builder-social-element::before,
+#colophon a.ast-builder-social-element::after,
+#colophon .ast-builder-social-element::before,
+#colophon .ast-builder-social-element::after{
+  content: none !important;
+  display: none !important;
+}
+
+/* 3) If Astra/Elementor wraps icons in spans, nuke their borders too */
+#colophon a.ast-builder-social-element span,
+#colophon a.ast-builder-social-element i,
+#colophon a.ast-builder-social-element .ast-social-icon,
+#colophon a.ast-builder-social-element .ast-social-icon-label{
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 4) Remove SVG “outline” look (stroke) */
+#colophon a.ast-builder-social-element svg,
+#colophon a.ast-builder-social-element svg *{
+  stroke: none !important;
+  outline: none !important;
+  filter: none !important; /* remove any weird edge filter */
+}
+
+/* 5) Optional: stop browser focus ring from looking like a border */
+#colophon a.ast-builder-social-element:focus-visible{
+  box-shadow: none !important;
+}
