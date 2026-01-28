@@ -1,3 +1,8 @@
+// Quick debug switch (set to true when tweaking)
+const KRISI_DEBUG = false;
+const log = (...args) => KRISI_DEBUG && console.log(...args);
+
+
 function initCursorFX() {
   if (isMobileish() || reducedMotion()) return;
 
