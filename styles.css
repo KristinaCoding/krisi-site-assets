@@ -302,3 +302,28 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
     0 0 18px rgba(0,240,255,.6);
 }
 
+/* =========================
+   MENU — BIGGER + WIDER
+========================= */
+
+.ast-above-header-bar a,
+.ast-primary-header-bar a,
+.main-navigation a{
+  font-size: 22px !important;      /* bigger */
+  font-weight: 650 !important;
+  letter-spacing: 0.6px;
+  padding: 18px 40px !important;   /* wider + taller pill */
+  border-radius: 999px !important;
+}
+
+/* reduce “tight” feel on menu row */
+.ast-above-header-bar .site-header-above-section-center ul{
+  gap: 70px !important;
+}
+
+/* dropdown arrows align better when bigger */
+.ast-icon.icon-arrow svg{
+  width: 16px !important;
+  height: 16px !important;
+  transform: translateY(1px);
+}
