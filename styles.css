@@ -282,4 +282,23 @@ body.fx-cursor, body.fx-cursor a{ cursor: none !important; }
 .ast-primary-header-bar .sub-menu li{
   width: 100% !important;
 }
+/* =========================
+   TEXT SELECTION — CYAN
+========================= */
+
+::selection{
+  background: rgba(0,240,255,0.35) !important;
+  color: #000 !important;
+  text-shadow:
+    0 0 6px rgba(0,240,255,.9),
+    0 0 18px rgba(0,240,255,.6);
+}
+
+::-moz-selection{
+  background: rgba(0,240,255,0.35) !important;
+  color: #000 !important;
+  text-shadow:
+    0 0 6px rgba(0,240,255,.9),
+    0 0 18px rgba(0,240,255,.6);
+}
 
