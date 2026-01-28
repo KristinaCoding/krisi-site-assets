@@ -482,3 +482,20 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
 #colophon a.ast-builder-social-element:focus-visible{
   box-shadow: none !important;
 }
+/* ======================================================
+   FORCE WHITE TEXT ON CYAN HIGHLIGHT BLOCKS
+====================================================== */
+
+.elementor-widget-text-editor,
+.elementor-widget-text-editor *,
+.elementor-heading-title,
+.elementor-heading-title *{
+  color: #F2F5F8 !important;   /* soft white */
+}
+.cyan-highlight,
+.cyan-highlight *{
+  color: #F2F5F8 !important;
+  text-shadow: 
+    0 0 6px rgba(0,240,255,.35),
+    0 0 14px rgba(0,240,255,.15);
+}
