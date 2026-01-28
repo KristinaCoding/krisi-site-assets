@@ -112,10 +112,6 @@ a{ color:inherit; text-decoration:none !important; }
   max-width: calc(100vw - 24px) !important;
 
   gap: 42px !important;
-
-   -webkit-backdrop-filter: blur(14px) saturate(1.15) !important;
-
-  box-shadow: var(--shadow), var(--glow) !important;
 }
 
 /* important: no per-item background blocks by default */
