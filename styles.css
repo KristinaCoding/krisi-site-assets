@@ -31,6 +31,24 @@ html, body{
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  position: relative;
+}
+
+/* ======================
+   GLASSMORPHIC BACKGROUND (BLACK/GREY/CYAN/WHITE)
+====================== */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 600px at 20% 10%, rgba(77,238,255,.18), transparent 60%),
+    radial-gradient(900px 700px at 80% 15%, rgba(255,255,255,.08), transparent 65%),
+    radial-gradient(900px 700px at 70% 85%, rgba(120,130,140,.22), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.92), rgba(8,12,16,.96));
+  filter: saturate(1.05);
 }
 
 /* Links */
@@ -329,6 +347,14 @@ a::selection, a *::selection{ text-decoration:none !important; }
     0 0 36px rgba(0,240,255,.35);
 }
 
+/* Remove captions/text blocks directly under cards */
+.glass-card + .elementor-widget-text-editor,
+.glass-card + .elementor-text-editor,
+.glass-card + p,
+.glass-card + .elementor-heading-title{
+  display:none !important;
+}
+
 /* Click burst (JS inserts .click-burst) */
 .click-burst{
   position:absolute;
@@ -510,16 +536,16 @@ a::selection, a *::selection{ text-decoration:none !important; }
    SECTION REVEAL (for JS)
 ====================== */
 .reveal{
-  opacity: 0;
-  transform: translateY(14px);
-  filter: blur(2px);
-  transition: opacity .7s ease, transform .8s cubic-bezier(.2,.8,.2,1), filter .8s ease;
-  will-change: opacity, transform, filter;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: none;
+  will-change: auto;
 }
 .reveal.reveal-in{
   opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
+  transform: none;
+  filter: none;
 }
 
 /* ======================
@@ -556,7 +582,7 @@ a::selection, a *::selection{ text-decoration:none !important; }
   opacity: 0;
   background:
     radial-gradient(circle at 50% 45%,
-      color-mix(in srgb, var(--accent) 24%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 16%, transparent) 0%,
       rgba(0,0,0,0) 60%
     ),
     linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.65));
