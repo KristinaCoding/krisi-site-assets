@@ -1,9 +1,10 @@
 /* ======================================================
-   KRISI.SITE — FX PACK (CLEAN FINAL)
+   KRISI.SITE — FX PACK (CLEAN FINAL v2)
    - Cursor tail + particles
    - Cyan fade transition on internal navigation
    - One consistent magical sound everywhere
    - Social orbit particles
+   - FIX: no double-binding clicks
 ====================================================== */
 
 function isMobileish() {
@@ -56,7 +57,7 @@ function initCursorFX() {
   let lastX = x, lastY = y;
 
   let lastParticleTime = 0;
-  const particleEveryMs = 20;
+  const particleEveryMs = 24; // slightly less busy (perf)
 
   window.addEventListener("mousemove", (e) => {
     tx = e.clientX;
@@ -96,7 +97,7 @@ function initCursorFX() {
   })();
 }
 
-/* ---------- audio + orbit ---------- */
+/* ---------- audio + orbit + nav ---------- */
 function initSoundAndNavFX() {
   const audio = { ctx: null, unlocked: false };
 
@@ -120,10 +121,9 @@ function initSoundAndNavFX() {
     const ctx = audio.ctx;
     const now = ctx.currentTime;
 
-    // volume (0.22–0.30 sweet spot)
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.26, now + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.24, now + 0.03);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
     gain.connect(ctx.destination);
 
@@ -142,7 +142,7 @@ function initSoundAndNavFX() {
     osc2.type = "sine";
     osc2.frequency.setValueAtTime(1600, now);
     gain2.gain.setValueAtTime(0.0001, now);
-    gain2.gain.exponentialRampToValueAtTime(0.06, now + 0.02);
+    gain2.gain.exponentialRampToValueAtTime(0.055, now + 0.02);
     gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
     osc2.connect(gain2).connect(ctx.destination);
     osc2.start(now);
@@ -164,7 +164,7 @@ function initSoundAndNavFX() {
     el.appendChild(layer);
   };
 
-  const shouldHandleLink = (a, e) => {
+  const isInternalNavLink = (a, e) => {
     if (!a || !a.href) return false;
     if (a.target === "_blank") return false;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
@@ -172,56 +172,54 @@ function initSoundAndNavFX() {
     const url = new URL(a.href, window.location.href);
     if (url.origin !== window.location.origin) return false;
 
+    // ignore hash jumps on same page
     const samePath = (url.pathname === window.location.pathname);
     if (samePath && url.hash) return false;
+
+    // ignore downloads/mailto/tel
+    if (a.hasAttribute("download")) return false;
+    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
 
     return true;
   };
 
-  // Astra nav + general internal links
-  const menuSelector = ".ast-primary-header-bar a, .ast-above-header-bar a, .main-navigation a, .ast-nav-menu a, .main-header-menu a";
-  const socialSelector = "#colophon a.ast-builder-social-element";
+  // Prepare overlay early
+  ensureTransitionOverlay();
 
-  const handleClick = async (e) => {
+  // Unlock audio on FIRST pointer interaction (more reliable than click)
+  const unlockOnce = async () => {
+    if (audio.unlocked) return;
+    createCtx();
+    await unlockAudio();
+    // optional tiny “hello” only once:
+    // if (audio.unlocked) magicalClick();
+    window.removeEventListener("pointerdown", unlockOnce, { capture: true });
+  };
+  window.addEventListener("pointerdown", unlockOnce, { capture: true, passive: true });
+
+  // Inject orbit layers once (footer socials)
+  document.querySelectorAll("#colophon a.ast-builder-social-element").forEach((a) => ensureOrbitLayer(a));
+
+  // SINGLE delegated handler for ALL clicks
+  document.addEventListener("click", async (e) => {
     const a = e.target.closest("a");
-
-    // ensure unlocked on first user interaction
-    if (!audio.unlocked) {
-      createCtx();
-      await unlockAudio();
-    }
+    if (!a) return;
 
     if (audio.unlocked) magicalClick();
 
-    if (a && shouldHandleLink(a, e)) {
+    if (isInternalNavLink(a, e)) {
       e.preventDefault();
       await runPageTransition();
       window.location.href = a.href;
     }
-  };
-
-  // prepare overlay early
-  ensureTransitionOverlay();
-
-  // bind menu links
-  document.querySelectorAll(menuSelector).forEach((a) => {
-    a.addEventListener("click", handleClick, { passive: false });
-  });
-
-  // bind socials
-  document.querySelectorAll(socialSelector).forEach((a) => {
-    ensureOrbitLayer(a);
-    a.addEventListener("mouseenter", () => { if (audio.unlocked) magicalClick(); }, { passive: true });
-    a.addEventListener("click", handleClick, { passive: false });
-  });
-
-  // bind other internal links, avoid double-binding
-  document.addEventListener("click", (e) => {
-    const a = e.target.closest("a");
-    if (!a) return;
-    if (a.matches(menuSelector) || a.matches(socialSelector)) return;
-    handleClick(e);
   }, { passive: false });
+
+  // Optional: hover sound on socials (only if already unlocked)
+  document.addEventListener("mouseenter", (e) => {
+    const a = e.target.closest("#colophon a.ast-builder-social-element");
+    if (!a) return;
+    if (audio.unlocked) magicalClick();
+  }, { capture: true, passive: true });
 }
 
 /* ---------- BOOT ---------- */
