@@ -159,7 +159,7 @@
   /* CLICK GLOW EXPLOSION */
   function initCardClickBurst(){
     document.addEventListener("click", (e) => {
-      const card = e.target.closest(".glass-card");
+      const card = e.target.closest(".glass-card, .dragon-card, .system-card, .icon-card");
       if (!card) return;
 
       const r = card.getBoundingClientRect();
@@ -176,9 +176,81 @@
     });
   }
 
+  function initContentCards(){
+    const headingSelector = "h2, h3, .elementor-heading-title";
+    const headings = Array.from(document.querySelectorAll(headingSelector));
+
+    function closestCard(el){
+      return el.closest(".elementor-column, .e-con, .elementor-widget-wrap, .elementor-widget-container, section");
+    }
+
+    const dragonNames = ["aether drake", "verdant wyrm", "cryo seraph", "pyro titan"];
+    headings.forEach(h => {
+      const text = (h.textContent || "").trim().toLowerCase();
+      if (!text) return;
+
+      if (dragonNames.some(name => text.includes(name))){
+        const card = closestCard(h);
+        if (card){
+          card.classList.add("dragon-card");
+          h.classList.add("dragon-card-title");
+          const img = card.querySelector("img");
+          if (img) img.classList.add("dragon-card-media");
+        }
+      }
+
+      if (["clarity", "structure", "flow", "leverage"].includes(text)){
+        const card = closestCard(h);
+        if (card) card.classList.add("system-card");
+      }
+
+      if (text.includes("why systems matter")){
+        const section = h.closest(".elementor-section, .e-con, section");
+        if (section) section.classList.add("particle-section");
+      }
+    });
+
+    const iconBoxes = document.querySelectorAll(".elementor-widget-icon-box, .elementor-widget-icon");
+    iconBoxes.forEach(box => {
+      const card = box.closest(".elementor-column, .e-con, .elementor-widget-wrap, .elementor-widget-container");
+      if (card && !card.classList.contains("system-card")){
+        card.classList.add("icon-card");
+      }
+    });
+  }
+
+  function initDragonParallax(){
+    const cards = document.querySelectorAll(".dragon-card");
+    cards.forEach(card => {
+      if (card.dataset.parallaxBound === "1") return;
+      card.dataset.parallaxBound = "1";
+
+      let rafId = null;
+      const onMove = (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        const rx = (-y * 10).toFixed(2);
+        const ry = (x * 12).toFixed(2);
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        });
+      };
+
+      const onLeave = () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        card.style.transform = "";
+      };
+
+      card.addEventListener("mousemove", onMove);
+      card.addEventListener("mouseleave", onLeave);
+    });
+  }
+
   /* FOOTER ORBIT */
   function initFooterOrbit(){
-    const links = document.querySelectorAll(".site-footer a");
+    const links = document.querySelectorAll(".site-footer a, .elementor-social-icon");
     links.forEach(a => {
       if (a.dataset.orbitBound === "1") return;
       a.dataset.orbitBound = "1";
@@ -205,6 +277,8 @@
     initCursorFX();
     initHeadingProximityGlow();
     initCardClickBurst();
+    initContentCards();
+    initDragonParallax();
     initFooterOrbit();
     // wave-glow is CSS-only: add class "wave-glow" to anything
   });
