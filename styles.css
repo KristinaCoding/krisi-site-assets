@@ -461,6 +461,7 @@ hr,
   box-shadow: 0 18px 40px rgba(0,0,0,.65);
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
+  margin: 10px;
 }
 .dragon-card{
   transform-style: preserve-3d;
@@ -529,15 +530,17 @@ hr,
 }
 
 /* =========================================
-   SOCIAL ICONS
+   SOCIAL ICONS (FOOTER ONLY)
    ========================================= */
-.elementor-social-icons{
+footer .elementor-social-icons,
+.site-footer .elementor-social-icons{
   display:flex !important;
   justify-content:center;
   gap:14px !important;
   flex-wrap: nowrap !important;
 }
-.elementor-social-icon{
+footer .elementor-social-icon,
+.site-footer .elementor-social-icon{
   position:relative;
   border-radius: 12px !important;
   overflow: visible !important;
