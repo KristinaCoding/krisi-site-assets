@@ -121,12 +121,12 @@ a{ color:inherit; text-decoration:none !important; }
 
   gap: 42px !important;
 
-  background: var(--glass) !important;
+  background: transparent !important;
   border: 0 !important;
   border-radius: 999px !important;
-  box-shadow: var(--bar-glow) !important;
-  backdrop-filter: blur(16px) saturate(1.15) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(1.15) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* important: no per-item background blocks by default */
@@ -490,14 +490,29 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   transition: transform .25s ease, box-shadow .25s ease;
 }
 
+.glass-card > *,
+.elementor-widget-icon-box .elementor-widget-container > *,
+.elementor-widget-image-box .elementor-widget-container > *,
+.elementor-widget-call-to-action .elementor-widget-container > *{
+  transform: translateZ(26px);
+  transition: transform .25s ease;
+}
+
 .glass-card:hover,
 .elementor-widget-icon-box .elementor-widget-container:hover,
 .elementor-widget-image-box .elementor-widget-container:hover,
 .elementor-widget-call-to-action .elementor-widget-container:hover{
-  transform: translateY(-6px) rotateX(2deg);
+  transform: translateY(-6px) rotateX(3deg) rotateY(-3deg);
   box-shadow:
     0 26px 60px rgba(0,0,0,.6),
     0 0 36px rgba(0,240,255,.2);
+}
+
+.glass-card:hover > *,
+.elementor-widget-icon-box .elementor-widget-container:hover > *,
+.elementor-widget-image-box .elementor-widget-container:hover > *,
+.elementor-widget-call-to-action .elementor-widget-container:hover > *{
+  transform: translateZ(40px);
 }
 
 .elementor-icon,
