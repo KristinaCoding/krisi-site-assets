@@ -166,8 +166,8 @@ a::selection, a *::selection{ text-decoration:none !important; }
   transition: transform .25s ease, filter .25s ease;
 }
 .site-footer a:hover{
-  transform:scale(1.25);
-  filter: drop-shadow(0 0 16px rgba(0,240,255,.9));
+  transform:none;
+  filter:none;
 }
 
 /* ========== Cursor glow ========== */
@@ -559,20 +559,4 @@ footer .elementor-social-icon,
   overflow: visible !important;
 }
 
-/* =========================================
-   HEADER SUB-MENU (SITE ONLY)
-   ========================================= */
-header .sub-menu,
-.ast-primary-header-bar .sub-menu,
-.demo-header .sub-menu{
-  display:flex !important;
-  flex-direction: column !important;
-  gap:10px;
-  padding:12px 14px;
-  border-radius:14px;
-  background: rgba(6, 12, 16, 0.78);
-  border:1px solid rgba(0,240,255,.22);
-  box-shadow: 0 18px 35px rgba(0,0,0,.6);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
+/* Header sub-menu effects removed per request. */

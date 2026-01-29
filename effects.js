@@ -61,7 +61,7 @@
 
   /* MAGNETIC PULL */
   function initMagneticPull(){
-    const items = document.querySelectorAll(".demo-nav a, .magnetic");
+    const items = document.querySelectorAll(".magnetic");
     items.forEach(el => {
       if (el.dataset.magnetBound === "1") return;
       el.dataset.magnetBound = "1";
@@ -279,7 +279,7 @@
     initCardClickBurst();
     initContentCards();
     initDragonParallax();
-    initFooterOrbit();
+    // Footer orbit disabled per request.
     // wave-glow is CSS-only: add class "wave-glow" to anything
   });
 
