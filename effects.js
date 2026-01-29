@@ -185,6 +185,7 @@
     }
 
     const dragonNames = ["aether drake", "verdant wyrm", "cryo seraph", "pyro titan"];
+    const glassCardHeadings = ["build a system", "learn the system", "explore the lab"];
     headings.forEach(h => {
       const text = (h.textContent || "").trim().toLowerCase();
       if (!text) return;
@@ -207,6 +208,11 @@
       if (text.includes("why systems matter")){
         const section = h.closest(".elementor-section, .e-con, section");
         if (section) section.classList.add("particle-section");
+      }
+
+      if (glassCardHeadings.includes(text)){
+        const card = closestCard(h);
+        if (card) card.classList.add("glass-card");
       }
     });
 
