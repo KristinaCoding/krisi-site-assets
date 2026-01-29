@@ -57,22 +57,11 @@ function initCursorFX() {
   let lastX = x, lastY = y;
 
   let lastParticleTime = 0;
-  const particleEveryMs = 24; // slightly less busy (perf)
+  const particleEveryMs = 30;
 
   window.addEventListener("mousemove", (e) => {
     tx = e.clientX;
     ty = e.clientY;
-
-    const now = performance.now();
-    if (now - lastParticleTime > particleEveryMs) {
-      lastParticleTime = now;
-      const p = document.createElement("div");
-      p.className = "cursor-particle";
-      p.style.left = tx + "px";
-      p.style.top = ty + "px";
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 650);
-    }
   }, { passive: true });
 
   (function loop() {
@@ -92,6 +81,18 @@ function initCursorFX() {
     glow.style.setProperty("--tailLen", (20 + speed * 1.7).toFixed(1) + "px");
     glow.style.setProperty("--tailRot", angle.toFixed(1) + "deg");
     glow.style.setProperty("--tailOpacity", (0.22 + speed / 45).toFixed(2));
+
+    const now = performance.now();
+    if (now - lastParticleTime > particleEveryMs && speed > 1) {
+      lastParticleTime = now;
+      const p = document.createElement("div");
+      p.className = "cursor-particle";
+      p.style.left = x + "px";
+      p.style.top = y + "px";
+      p.style.transform = `translate(-50%, -50%) scale(${Math.min(1.2, 0.6 + speed / 26).toFixed(2)})`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 650);
+    }
 
     requestAnimationFrame(loop);
   })();
@@ -183,6 +184,10 @@ function initSoundAndNavFX() {
     return true;
   };
 
+  const isMenuLink = (el) => (
+    !!el.closest(".main-header-menu, .ast-nav-menu, .main-header-bar-navigation")
+  );
+
   // Prepare overlay early
   ensureTransitionOverlay();
 
@@ -205,14 +210,20 @@ function initSoundAndNavFX() {
     const a = e.target.closest("a");
     if (!a) return;
 
-    if (audio.unlocked) magicalClick();
-
     if (isInternalNavLink(a, e)) {
+      if (audio.unlocked) magicalClick();
       e.preventDefault();
       await runPageTransition();
       window.location.href = a.href;
     }
   }, { passive: false });
+
+  // Hover sound on menu items (once unlocked)
+  document.addEventListener("mouseenter", (e) => {
+    const a = e.target.closest(".main-header-menu a, .ast-nav-menu a, .main-header-bar-navigation a");
+    if (!a) return;
+    if (audio.unlocked && isMenuLink(a)) magicalClick();
+  }, { capture: true, passive: true });
 
   // Optional: hover sound on socials (only if already unlocked)
   document.addEventListener("mouseenter", (e) => {
@@ -220,6 +231,20 @@ function initSoundAndNavFX() {
     if (!a) return;
     if (audio.unlocked) magicalClick();
   }, { capture: true, passive: true });
+
+  // G key glow pulse
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() !== "g") return;
+    const tag = e.target.tagName;
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(tag) || e.target.isContentEditable) return;
+    document.body.classList.remove("g-glow");
+    void document.body.offsetWidth;
+    document.body.classList.add("g-glow");
+    window.clearTimeout(window.__krisiGlowTimer);
+    window.__krisiGlowTimer = window.setTimeout(() => {
+      document.body.classList.remove("g-glow");
+    }, 700);
+  });
 }
 
 /* ---------- BOOT ---------- */
