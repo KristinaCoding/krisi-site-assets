@@ -10,7 +10,7 @@
 
 :root{
   --bg:#000;
-  --text:#E6F1FF;
+  --text:#EEF4FF;
   --muted:#9FB3C8;
 
   --cyan:#00F0FF;
@@ -19,11 +19,16 @@
   --glass: rgba(6,14,18,.58);
   --glass2: rgba(6,14,18,.82);
   --stroke: rgba(0,240,255,.18);
+  --glass-border: rgba(0,240,255,.22);
 
   --shadow: 0 18px 44px rgba(0,0,0,.55);
   --glow: 0 0 26px rgba(0,240,255,.12);
+  --glass-shadow:
+    0 18px 44px rgba(0,0,0,.6),
+    0 0 30px rgba(0,240,255,.15);
 
   --radius: 14px;
+  --bar-width: clamp(280px, calc(100vw - 96px), 980px);
 }
 
 *{ box-sizing:border-box; }
@@ -108,10 +113,17 @@ a{ color:inherit; text-decoration:none !important; }
   margin: 0 auto !important;
   padding: 16px 30px !important;
 
-  width: fit-content !important;
-  max-width: calc(100vw - 24px) !important;
+  width: var(--bar-width) !important;
+  max-width: var(--bar-width) !important;
 
   gap: 42px !important;
+
+  background: var(--glass) !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(16px) saturate(1.15) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.15) !important;
 }
 
 /* important: no per-item background blocks by default */
@@ -147,6 +159,16 @@ a{ color:inherit; text-decoration:none !important; }
   box-shadow: none !important;
 
   transition: background .2s ease, box-shadow .2s ease, transform .2s ease, color .2s ease;
+}
+
+.ast-primary-header-bar .main-header-menu > li > a:hover,
+.ast-above-header-bar .main-header-menu > li > a:hover,
+.ast-primary-header-bar ul.ast-nav-menu > li > a:hover,
+.ast-above-header-bar ul.ast-nav-menu > li > a:hover,
+.ast-primary-header-bar ul.menu > li > a:hover,
+.ast-above-header-bar ul.menu > li > a:hover{
+  color: var(--cyan) !important;
+  text-shadow: 0 0 12px rgba(0,240,255,.6);
 }
 
 /* arrow */
@@ -210,15 +232,20 @@ a{ color:inherit; text-decoration:none !important; }
   opacity: 0;
 
   background:
-    radial-gradient(900px 520px at 50% 42%,
-      rgba(0,240,255,.18) 0%,
-      rgba(0,240,255,.08) 28%,
-      rgba(0,0,0,0) 64%
+    radial-gradient(680px 380px at 45% 38%,
+      rgba(0,240,255,.26) 0%,
+      rgba(0,240,255,.14) 34%,
+      rgba(0,0,0,0) 68%
+    ),
+    radial-gradient(560px 360px at 58% 48%,
+      rgba(0,240,255,.16) 0%,
+      rgba(0,240,255,.08) 38%,
+      rgba(0,0,0,0) 70%
     ),
     linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.78));
 
   transition: opacity .28s ease;
-  backdrop-filter: blur(1px);
+  backdrop-filter: blur(4px) saturate(1.1);
 }
 body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
 
@@ -250,26 +277,50 @@ body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
   align-items:center !important;
   margin: 0 auto !important;
   padding: 22px 26px !important;
+  width: var(--bar-width) !important;
+  max-width: var(--bar-width) !important;
+
+  background: var(--glass) !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(16px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.2) !important;
 }
 
 /* anchors = boxed icons */
 #colophon a.ast-builder-social-element{
-  width: 94px !important;
-  height: 94px !important;
+  width: 104px !important;
+  height: 104px !important;
  
    transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
   overflow: visible !important;
+  position: relative !important;
 }
 
 /* kill any weird pseudo-lines some themes add */
-#colophon a.ast-builder-social-element::before,
 #colophon a.ast-builder-social-element::after{
-  content: none !important;
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 999px;
+  border: 2px solid rgba(0,240,255,.55);
+  box-shadow:
+    0 0 16px rgba(0,240,255,.55),
+    0 0 34px rgba(0,240,255,.4);
+  opacity: 0;
+  transform: scale(.86);
+  transition: opacity .2s ease, transform .2s ease;
+}
+#colophon a.ast-builder-social-element:hover::after{
+  opacity: 1;
+  transform: scale(1);
 }
 
 #colophon a.ast-builder-social-element svg{
-  width: 22px !important;
-  height: 22px !important;
+  width: 30px !important;
+  height: 30px !important;
+  filter: drop-shadow(0 0 12px rgba(0,240,255,.35));
 }
 
 /* orbit visuals (JS injects) */
@@ -316,9 +367,9 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   mix-blend-mode: screen;
   transform: translate(-50%, -50%);
 
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 
   --tailLen: 28px;
   --tailRot: 0deg;
@@ -339,7 +390,7 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   content:"";
   position:absolute;
   inset:-7px;
-  border-radius:999px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   border: 2px solid rgba(0,240,255,.35);
   box-shadow: 0 0 18px rgba(0,240,255,.25);
   opacity:.85;
@@ -361,7 +412,7 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   opacity: var(--tailOpacity);
   pointer-events:none;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(0,240,255,.9) 0%, rgba(0,240,255,0) 85%);
+  background: linear-gradient(90deg, rgba(0,240,255,.95) 0%, rgba(0,240,255,0) 85%);
   filter: drop-shadow(0 0 14px rgba(0,240,255,.45));
 }
 
@@ -369,7 +420,7 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   position: fixed;
   width: 6px;
   height: 6px;
-  border-radius: 999px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   pointer-events:none;
   left:0; top:0;
   transform: translate(-50%, -50%);
@@ -417,6 +468,56 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   }
 }
 /* ======================================================
+   GLASS CARDS + STAR GLOW
+====================================================== */
+.glass-card,
+.elementor-widget-icon-box .elementor-widget-container,
+.elementor-widget-image-box .elementor-widget-container,
+.elementor-widget-call-to-action .elementor-widget-container{
+  background: var(--glass) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(16px) saturate(1.15) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.15) !important;
+  padding: 22px !important;
+}
+
+.elementor-icon,
+.elementor-icon svg,
+.elementor-icon-box-icon svg{
+  color: var(--cyan) !important;
+  fill: var(--cyan) !important;
+  filter:
+    drop-shadow(0 0 10px rgba(0,240,255,.65))
+    drop-shadow(0 0 26px rgba(0,240,255,.35));
+}
+
+/* ======================================================
+   G KEY NEON GLOW
+====================================================== */
+body.g-glow::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99999990;
+  background:
+    radial-gradient(600px 420px at 50% 50%,
+      rgba(0,240,255,.25) 0%,
+      rgba(0,200,255,.16) 35%,
+      rgba(0,0,0,0) 70%
+    );
+  animation: gGlowPulse .6s ease-out forwards;
+  mix-blend-mode: screen;
+}
+
+@keyframes gGlowPulse{
+  0%{ opacity: 0; }
+  25%{ opacity: 1; }
+  100%{ opacity: 0; }
+}
+/* ======================================================
    KILL ALL SOCIAL BORDERS (Astra/Elementor footer)
    - removes borders, outlines, pseudo borders, svg strokes
 ====================================================== */
@@ -435,10 +536,8 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
 }
 
 /* 2) Kill any pseudo elements that draw lines/frames */
-#colophon a.ast-builder-social-element::before,
-#colophon a.ast-builder-social-element::after,
-#colophon .ast-builder-social-element::before,
-#colophon .ast-builder-social-element::after{
+#colophon .ast-builder-social-element:not(a)::before,
+#colophon .ast-builder-social-element:not(a)::after{
   content: none !important;
   display: none !important;
 }
