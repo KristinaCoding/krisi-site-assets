@@ -32,6 +32,10 @@
 
   --radius: 14px;
   --bar-width: clamp(280px, calc(100vw - 96px), 980px);
+  /* Home layout rhythm */
+  --content-width: clamp(980px, 88vw, 1180px);
+  --section-pad: clamp(64px, 10vw, 120px);
+  --card-pad: clamp(20px, 2.6vw, 28px);
 }
 
 *{ box-sizing:border-box; }
@@ -468,6 +472,182 @@ body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
   .ast-above-header-bar ul.menu > li > a{
     font-size: 18px !important;
     padding: 8px 10px !important;
+  }
+}
+
+/* ======================================================
+   HOME — HERO + CARDS + WHY SYSTEMS + CHIPS (AESTHETICS)
+   Notes: scoped to .home and only uses existing markup
+====================================================== */
+body.home .elementor-section,
+body.home .e-con{
+  padding-top: var(--section-pad) !important;
+  padding-bottom: var(--section-pad) !important;
+}
+
+body.home .elementor-section > .elementor-container,
+body.home .e-con-inner{
+  max-width: var(--content-width) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  gap: clamp(18px, 3vw, 32px);
+}
+
+body.home .elementor-widget-heading .elementor-heading-title{
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+}
+
+/* Hero hierarchy */
+body.home .elementor-section:first-of-type .elementor-heading-title{
+  font-size: clamp(36px, 5.4vw, 64px) !important;
+  text-shadow: 0 0 30px rgba(0,240,255,.16);
+}
+
+body.home .elementor-section:first-of-type .elementor-widget-text-editor{
+  font-size: clamp(16px, 2.1vw, 20px) !important;
+  color: var(--muted) !important;
+  line-height: 1.7 !important;
+}
+
+body.home .elementor-section:first-of-type .elementor-widget-text-editor,
+body.home .elementor-section:first-of-type .elementor-widget-heading{
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* Cards grid (dragon cards) */
+body.home .elementor-section:has(.elementor-widget-icon-box, .elementor-widget-image-box)
+  > .elementor-container{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+body.home .elementor-widget-icon-box .elementor-widget-container,
+body.home .elementor-widget-image-box .elementor-widget-container{
+  padding: var(--card-pad) !important;
+  height: 100%;
+}
+
+body.home .elementor-widget-icon-box .elementor-icon-box-icon,
+body.home .elementor-widget-image-box .elementor-image-box-img{
+  margin-bottom: 16px !important;
+}
+
+body.home .elementor-widget-image-box .elementor-image-box-img img,
+body.home .elementor-widget-icon-box .elementor-icon{
+  width: clamp(52px, 6vw, 72px);
+  height: clamp(52px, 6vw, 72px);
+}
+
+body.home .elementor-widget-icon-box .elementor-icon-box-title,
+body.home .elementor-widget-image-box .elementor-image-box-title{
+  font-size: clamp(18px, 2.2vw, 22px) !important;
+  margin-bottom: 10px !important;
+}
+
+body.home .elementor-widget-icon-box .elementor-icon-box-description,
+body.home .elementor-widget-image-box .elementor-image-box-description{
+  font-size: clamp(14px, 1.7vw, 16px) !important;
+  line-height: 1.6 !important;
+  color: var(--muted) !important;
+  max-width: 32ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Subtle lift + glow refinement */
+body.home .elementor-widget-icon-box .elementor-widget-container:hover,
+body.home .elementor-widget-image-box .elementor-widget-container:hover{
+  transform: translateY(-8px) !important;
+  box-shadow:
+    0 24px 54px rgba(0,0,0,.65),
+    0 0 36px rgba(0,240,255,.22) !important;
+}
+
+/* Why systems matter (2-column balance + chips stack) */
+body.home .elementor-section:has(.elementor-icon-list-item)
+  > .elementor-container{
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+}
+
+body.home .elementor-section:has(.elementor-icon-list-item) .elementor-widget-text-editor{
+  line-height: 1.7 !important;
+  color: var(--muted) !important;
+}
+
+body.home .elementor-icon-list-items{
+  display: grid !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body.home .elementor-icon-list-item,
+body.home .elementor-icon-list-item a{
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 14px 16px !important;
+  border-radius: 18px !important;
+  background: rgba(6,14,18,.68) !important;
+  border: 1px solid rgba(0,240,255,.22) !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,.55), 0 0 18px rgba(0,240,255,.12) !important;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+body.home .elementor-icon-list-item:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 18px 34px rgba(0,0,0,.6), 0 0 24px rgba(0,240,255,.2);
+}
+
+body.home .elementor-icon-list-text{
+  font-size: clamp(14px, 1.8vw, 16px) !important;
+  letter-spacing: .02em;
+}
+
+/* Scroll reveal (JS toggles .is-visible) */
+.kr-reveal{
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.kr-reveal.is-visible{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .kr-reveal{
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1024px){
+  body.home .elementor-section:has(.elementor-widget-icon-box, .elementor-widget-image-box)
+    > .elementor-container{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  body.home .elementor-section:has(.elementor-icon-list-item)
+    > .elementor-container{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px){
+  body.home .elementor-section:has(.elementor-widget-icon-box, .elementor-widget-image-box)
+    > .elementor-container{
+    grid-template-columns: 1fr;
+  }
+  body.home .elementor-widget-icon-box .elementor-widget-container,
+  body.home .elementor-widget-image-box .elementor-widget-container{
+    padding: 18px !important;
   }
 }
 /* ======================================================
