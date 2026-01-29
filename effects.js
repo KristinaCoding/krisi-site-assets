@@ -1,914 +1,304 @@
 /* ======================================================
-   KRISI.SITE — CYBER GLASS UI (CLEAN FINAL v3)
-   Astra + Elementor
-
-   Goals:
-   - Keep ALL existing effects (glass, cursor, particles, orbit, sounds hooks, G glow, transitions)
-   - Clean structure, remove redundancy, scope safely
-   - Fix Home spacing (less floaty)
-   - Center & structure Section 3 (Why systems + chips)
+   KRISI.SITE — FX PACK (CLEAN FINAL v2)
+   - Cursor tail + particles
+   - Cyan fade transition on internal navigation
+   - One consistent magical sound everywhere
+   - Social orbit particles
+   - Scroll reveal
+   - FIX: no double-binding clicks
 ====================================================== */
 
-/* ======================================================
-   TOKENS
-====================================================== */
-:root{
-  --bg:#000;
-  --text:#EEF4FF;
-  --muted:#9FB3C8;
-
-  --cyan:#00F0FF;
-  --cyan2:#4DEEFF;
-
-  --glass: rgba(6,14,18,.58);
-  --glass2: rgba(6,14,18,.82);
-  --stroke: rgba(0,240,255,.18);
-  --glass-border: rgba(0,240,255,.22);
-
-  --shadow: 0 18px 44px rgba(0,0,0,.55);
-  --glow: 0 0 26px rgba(0,240,255,.12);
-  --glass-shadow:
-    0 18px 44px rgba(0,0,0,.6),
-    0 0 30px rgba(0,240,255,.15);
-  --bar-glow:
-    0 18px 44px rgba(0,0,0,.6),
-    0 0 36px rgba(0,240,255,.22);
-
-  --radius: 14px;
-  --bar-width: clamp(280px, calc(100vw - 96px), 980px);
-
-  /* layout rhythm */
-  --content-width: clamp(980px, 88vw, 1180px);
-  --section-pad: clamp(64px, 10vw, 120px);
-  --card-pad: clamp(20px, 2.6vw, 28px);
-
-  /* home spacing (tighter than section-pad, hero stays big) */
-  --home-pad: clamp(24px, 4.5vw, 56px);
-  --home-hero-top: clamp(72px, 10vw, 120px);
-  --home-hero-bottom: clamp(44px, 7vw, 88px);
+function isMobileish() {
+  return window.matchMedia("(max-width: 768px)").matches || ("ontouchstart" in window);
 }
 
-/* ======================================================
-   BASE RESET
-====================================================== */
-*{ box-sizing:border-box; }
-
-html, body{
-  height:100%;
-  margin:0;
-  background: var(--bg) !important;
-  color: var(--text);
-  overflow-x:hidden;
+function reducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-a{ color:inherit; text-decoration:none !important; }
+/* ---------- scroll reveal ---------- */
+function initScrollReveal() {
+  if (reducedMotion()) return;
 
-@media (prefers-reduced-motion: reduce){
-  *{ animation:none !important; transition:none !important; }
-}
-
-/* selection */
-::selection{ background: rgba(0,240,255,.35); color:#000; }
-::-moz-selection{ background: rgba(0,240,255,.35); color:#000; }
-
-/* ======================================================
-   FORCE BLACK (Astra + Elementor)
-====================================================== */
-#page,
-#content,
-.site,
-.site-content,
-.site-main,
-.content-area,
-.ast-container,
-.ast-container-fluid,
-.elementor,
-.elementor-section,
-.elementor-container,
-.e-con,
-.e-con-inner{
-  background:#000 !important;
-}
-
-.elementor-background-overlay,
-.elementor-section .elementor-background-overlay,
-.e-con .elementor-background-overlay{
-  background: transparent !important;
-}
-
-/* ======================================================
-   HEADER BASE
-====================================================== */
-.ast-primary-header-bar,
-.ast-above-header-bar,
-.ast-primary-header-bar .ast-container,
-.ast-above-header-bar .ast-container{
-  background:#000 !important;
-  border-bottom: 1px solid rgba(0,240,255,.10);
-}
-
-/* ======================================================
-   MENU — ONE GLASS BAR (UL)
-====================================================== */
-.ast-primary-header-bar .main-navigation,
-.ast-above-header-bar .main-navigation,
-.ast-primary-header-bar .main-header-bar-navigation,
-.ast-above-header-bar .main-header-bar-navigation{
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.ast-primary-header-bar .main-header-menu,
-.ast-above-header-bar .main-header-menu,
-.ast-primary-header-bar ul.ast-nav-menu,
-.ast-above-header-bar ul.ast-nav-menu,
-.ast-primary-header-bar ul.menu,
-.ast-above-header-bar ul.menu{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-
-  list-style:none !important;
-  margin: 0 auto !important;
-  padding: 22px 26px !important;
-
-  width: var(--bar-width) !important;
-  max-width: var(--bar-width) !important;
-
-  gap: 42px !important;
-
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 999px !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-.ast-primary-header-bar .main-header-menu > li,
-.ast-above-header-bar .main-header-menu > li,
-.ast-primary-header-bar ul.ast-nav-menu > li,
-.ast-above-header-bar ul.ast-nav-menu > li,
-.ast-primary-header-bar ul.menu > li,
-.ast-above-header-bar ul.menu > li{
-  margin: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-}
-
-.ast-primary-header-bar .main-header-menu > li > a,
-.ast-above-header-bar .main-header-menu > li > a,
-.ast-primary-header-bar ul.ast-nav-menu > li > a,
-.ast-above-header-bar ul.ast-nav-menu > li > a,
-.ast-primary-header-bar ul.menu > li > a,
-.ast-above-header-bar ul.menu > li > a{
-  position: relative !important;
-
-  font-size: 22px !important;
-  font-weight: 650 !important;
-  letter-spacing: .6px !important;
-
-  padding: 10px 14px !important;
-  border-radius: 12px !important;
-
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-
-  transition: background .2s ease, box-shadow .2s ease, transform .2s ease, color .2s ease;
-}
-
-.ast-primary-header-bar .main-header-menu > li > a:hover,
-.ast-above-header-bar .main-header-menu > li > a:hover,
-.ast-primary-header-bar ul.ast-nav-menu > li > a:hover,
-.ast-above-header-bar ul.ast-nav-menu > li > a:hover,
-.ast-primary-header-bar ul.menu > li > a:hover,
-.ast-above-header-bar ul.menu > li > a:hover{
-  color: var(--cyan) !important;
-  text-shadow: 0 0 12px rgba(0,240,255,.6);
-}
-
-/* arrow */
-.ast-icon.icon-arrow svg{
-  width: 16px !important;
-  height: 16px !important;
-  transform: translateY(1px);
-}
-
-/* ======================================================
-   DROPDOWN — GLASS + READABLE
-====================================================== */
-.ast-primary-header-bar .sub-menu,
-.ast-above-header-bar .sub-menu,
-.ast-primary-header-bar ul.sub-menu,
-.ast-above-header-bar ul.sub-menu{
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
-  white-space: nowrap !important;
-
-  background: var(--glass2) !important;
-  border: 1px solid var(--stroke) !important;
-  border-radius: 16px !important;
-
-  padding: 10px !important;
-  min-width: 240px !important;
-
-  backdrop-filter: blur(14px) saturate(1.15) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(1.15) !important;
-
-  box-shadow:
-    0 18px 40px rgba(0,0,0,.65),
-    0 0 26px rgba(0,240,255,.14) !important;
-}
-
-.ast-primary-header-bar .sub-menu li a,
-.ast-above-header-bar .sub-menu li a{
-  display:block !important;
-  padding: 12px 16px !important;
-  border-radius: 12px !important;
-  letter-spacing: .35px !important;
-}
-
-.ast-primary-header-bar .sub-menu li a:hover,
-.ast-above-header-bar .sub-menu li a:hover{
-  background: linear-gradient(135deg, var(--cyan), var(--cyan2));
-  color:#000 !important;
-  box-shadow:
-    0 0 12px rgba(0,240,255,.85),
-    0 0 28px rgba(0,240,255,.55);
-}
-
-/* ======================================================
-   PAGE TRANSITION OVERLAY (JS toggles pt-ready + pt-leaving)
-====================================================== */
-.page-transition{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99999999;
-  opacity: 0;
-
-  background:
-    radial-gradient(680px 380px at 45% 38%,
-      rgba(0,240,255,.26) 0%,
-      rgba(0,240,255,.14) 34%,
-      rgba(0,0,0,0) 68%
-    ),
-    radial-gradient(560px 360px at 58% 48%,
-      rgba(0,240,255,.16) 0%,
-      rgba(0,240,255,.08) 38%,
-      rgba(0,0,0,0) 70%
-    ),
-    linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.78));
-
-  transition: opacity .28s ease;
-  backdrop-filter: blur(4px) saturate(1.1);
-}
-body.pt-ready.pt-leaving .page-transition{ opacity: 1; }
-
-/* ======================================================
-   GLASS CARDS (GLOBAL) — keep your 3D hover
-====================================================== */
-.glass-card,
-.elementor-widget-icon-box .elementor-widget-container,
-.elementor-widget-image-box .elementor-widget-container,
-.elementor-widget-call-to-action .elementor-widget-container{
-  background: var(--glass) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius) !important;
-  box-shadow: var(--glass-shadow) !important;
-  backdrop-filter: blur(16px) saturate(1.15) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(1.15) !important;
-  padding: 22px !important;
-
-  transform: translateZ(0);
-  transform-style: preserve-3d;
-  perspective: 900px;
-  transition: transform .25s ease, box-shadow .25s ease;
-}
-
-.glass-card > *,
-.elementor-widget-icon-box .elementor-widget-container > *,
-.elementor-widget-image-box .elementor-widget-container > *,
-.elementor-widget-call-to-action .elementor-widget-container > *{
-  transform: translateZ(26px);
-  transition: transform .25s ease;
-}
-
-.glass-card:hover,
-.elementor-widget-icon-box .elementor-widget-container:hover,
-.elementor-widget-image-box .elementor-widget-container:hover,
-.elementor-widget-call-to-action .elementor-widget-container:hover{
-  transform: translateY(-6px) rotateX(3deg) rotateY(-3deg);
-  box-shadow:
-    0 26px 60px rgba(0,0,0,.6),
-    0 0 36px rgba(0,240,255,.2);
-}
-
-.glass-card:hover > *,
-.elementor-widget-icon-box .elementor-widget-container:hover > *,
-.elementor-widget-image-box .elementor-widget-container:hover > *,
-.elementor-widget-call-to-action .elementor-widget-container:hover > *{
-  transform: translateZ(40px);
-}
-
-/* icon glow */
-.elementor-icon,
-.elementor-icon svg,
-.elementor-icon-box-icon svg{
-  color: var(--cyan) !important;
-  fill: var(--cyan) !important;
-  filter:
-    drop-shadow(0 0 10px rgba(0,240,255,.65))
-    drop-shadow(0 0 26px rgba(0,240,255,.35));
-}
-
-/* ======================================================
-   CURSOR + PARTICLES (JS adds body.fx-cursor)
-====================================================== */
-body.fx-cursor, body.fx-cursor a{ cursor:none !important; }
-
-.cursor-glow{
-  position: fixed;
-  left: 0; top: 0;
-  pointer-events:none;
-  z-index: 9999999;
-  mix-blend-mode: screen;
-  transform: translate(-50%, -50%);
-
-  width: 30px;
-  height: 30px;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-
-  --tailLen: 28px;
-  --tailRot: 0deg;
-  --tailOpacity: .55;
-
-  background: radial-gradient(circle,
-    color-mix(in srgb, var(--cyan) 92%, white 8%) 0%,
-    color-mix(in srgb, var(--cyan) 55%, transparent 45%) 40%,
-    rgba(0,0,0,0) 72%
+  const targets = document.querySelectorAll(
+    ".elementor-section, .e-con, " +
+    ".elementor-widget-icon-box .elementor-widget-container, " +
+    ".elementor-widget-image-box .elementor-widget-container, " +
+    ".elementor-icon-list-item"
   );
 
-  filter:
-    drop-shadow(0 0 12px rgba(0,240,255,.75))
-    drop-shadow(0 0 28px rgba(0,240,255,.45));
+  if (!targets.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: "0px 0px -10% 0px", threshold: 0.15 });
+
+  targets.forEach((el) => {
+    el.classList.add("kr-reveal");
+    observer.observe(el);
+  });
 }
 
-.cursor-glow::before{
-  content:"";
-  position:absolute;
-  inset:-7px;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  border: 2px solid rgba(0,240,255,.35);
-  box-shadow: 0 0 18px rgba(0,240,255,.25);
-  opacity:.85;
-  animation: cursorPulse 1.7s ease-in-out infinite;
-}
-
-@keyframes cursorPulse{
-  0%,100%{ transform: scale(1); opacity:.7; }
-  50%{ transform: scale(1.08); opacity:1; }
-}
-
-.cursor-glow .cursor-tail{
-  position:absolute;
-  left:50%; top:50%;
-  height: 8px;
-  width: var(--tailLen);
-  transform-origin: 0% 50%;
-  transform: translate(-50%,-50%) rotate(var(--tailRot)) translateX(8px);
-  opacity: var(--tailOpacity);
-  pointer-events:none;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(0,240,255,.95) 0%, rgba(0,240,255,0) 85%);
-  filter: drop-shadow(0 0 14px rgba(0,240,255,.45));
-}
-
-.cursor-particle{
-  position: fixed;
-  width: 6px;
-  height: 6px;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  pointer-events:none;
-  left:0; top:0;
-  transform: translate(-50%, -50%);
-  z-index: 9999998;
-  mix-blend-mode: screen;
-
-  background: radial-gradient(circle, rgba(0,240,255,.9) 0%, rgba(0,0,0,0) 70%);
-  filter: drop-shadow(0 0 12px rgba(0,240,255,.55));
-  opacity: .95;
-  animation: particleFade 620ms ease-out forwards;
-}
-
-@keyframes particleFade{
-  0%   { opacity: .95; transform: translate(-50%,-50%) scale(1); }
-  100% { opacity: 0;   transform: translate(-50%,-50%) scale(.2); }
-}
-
-/* ======================================================
-   FOOTER SOCIAL — ONE GLASS BAR + ORBIT (JS injects)
-====================================================== */
-#colophon .ast-footer-social-wrap,
-#colophon .ast-footer-social-1-wrap,
-#colophon .ast-builder-social,
-#colophon .ast-builder-layout-element,
-#colophon .ast-builder-grid-row-container{
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-#colophon .footer-social-inner-wrap.element-social-inner-wrap{
-  justify-content:center !important;
-  align-items:center !important;
-  margin: 0 auto !important;
-  padding: 22px 26px !important;
-  width: var(--bar-width) !important;
-  max-width: var(--bar-width) !important;
-
-  background: var(--glass) !important;
-  border: 0 !important;
-  border-radius: 999px !important;
-  box-shadow: var(--bar-glow) !important;
-  backdrop-filter: blur(16px) saturate(1.2) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(1.2) !important;
-}
-
-#colophon a.ast-builder-social-element{
-  width: 104px !important;
-  height: 104px !important;
-  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
-  overflow: visible !important;
-  position: relative !important;
-}
-
-/* hover ring */
-#colophon a.ast-builder-social-element::after{
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border-radius: 999px;
-  border: 2px solid rgba(0,240,255,.55);
-  box-shadow:
-    0 0 16px rgba(0,240,255,.55),
-    0 0 34px rgba(0,240,255,.4);
-  opacity: 0;
-  transform: scale(.86);
-  transition: opacity .2s ease, transform .2s ease;
-}
-#colophon a.ast-builder-social-element:hover::after{
-  opacity: 1;
-  transform: scale(1);
-}
-
-#colophon a.ast-builder-social-element svg{
-  width: 30px !important;
-  height: 30px !important;
-  filter: drop-shadow(0 0 12px rgba(0,240,255,.35));
-}
-
-/* orbit visuals */
-.orbit-layer{
-  position:absolute;
-  left:50%; top:50%;
-  width: 64px; height: 64px;
-  transform: translate(-50%, -50%);
-  pointer-events:none;
-  z-index: 3;
-  opacity: 0;
-  transition: opacity .18s ease;
-  filter: drop-shadow(0 0 14px rgba(0,240,255,.55));
-  mix-blend-mode: screen;
-}
-#colophon a.ast-builder-social-element:hover .orbit-layer{ opacity: 1; }
-
-.orbit-spin{ position:absolute; inset:0; animation: orbitSpin 1.1s linear infinite; }
-.orbit-spin:nth-child(2){ animation-duration: 1.55s; opacity:.8; }
-.orbit-spin:nth-child(3){ animation-duration:  2.1s; opacity:.65; }
-
-.orbit-dot{
-  position:absolute;
-  left:50%; top:50%;
-  width: 5px; height: 5px;
-  border-radius: 999px;
-  transform: translate(-50%, -50%) translateX(28px);
-  background: rgba(0,240,255,.95);
-  box-shadow: 0 0 10px rgba(0,240,255,.95), 0 0 22px rgba(0,240,255,.55);
-}
-@keyframes orbitSpin{ from{ transform: rotate(0deg);} to{ transform: rotate(360deg);} }
-
-/* ======================================================
-   HOME — STRUCTURE + RHYTHM (CLEAN)
-   NOTE: This is the main cleanup: tighter spacing + centered Section 3
-====================================================== */
-
-/* home baseline spacing (tight) */
-body.home .elementor-section,
-body.home .e-con{
-  padding-top: var(--home-pad) !important;
-  padding-bottom: var(--home-pad) !important;
-}
-
-/* hero keeps large pad */
-body.home .elementor-section:first-of-type,
-body.home .e-con:first-of-type{
-  padding-top: var(--home-hero-top) !important;
-  padding-bottom: var(--home-hero-bottom) !important;
-}
-
-/* constrain inner width on home */
-body.home .elementor-section > .elementor-container,
-body.home .e-con-inner{
-  max-width: var(--content-width) !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  gap: clamp(18px, 3vw, 32px);
-}
-
-/* typography default */
-body.home .elementor-widget-heading .elementor-heading-title{
-  line-height: 1.08;
-  letter-spacing: 0.01em;
-}
-
-/* HERO hierarchy */
-body.home .elementor-section:first-of-type .elementor-heading-title{
-  font-size: clamp(36px, 5.4vw, 64px) !important;
-  text-shadow: 0 0 30px rgba(0,240,255,.16);
-}
-body.home .elementor-section:first-of-type .elementor-widget-text-editor{
-  font-size: clamp(16px, 2.1vw, 20px) !important;
-  color: var(--muted) !important;
-  line-height: 1.7 !important;
-}
-body.home .elementor-section:first-of-type .elementor-widget-text-editor,
-body.home .elementor-section:first-of-type .elementor-widget-heading{
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
-
-/* Cards grid */
-body.home .elementor-section:has(.elementor-widget-icon-box, .elementor-widget-image-box)
-  > .elementor-container{
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: stretch;
-}
-
-/* card internals consistency (won’t kill your effects) */
-body.home .elementor-widget-icon-box .elementor-widget-container,
-body.home .elementor-widget-image-box .elementor-widget-container{
-  padding: var(--card-pad) !important;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-/* image crop consistency for image-box dragons */
-body.home .elementor-widget-image-box .elementor-image-box-img{
-  width: 100%;
-  max-width: 260px;
-  margin-bottom: 12px !important;
-}
-body.home .elementor-widget-image-box .elementor-image-box-img img{
-  width: 100% !important;
-  height: 92px !important;
-  object-fit: cover !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(0,240,255,.14);
-  box-shadow: 0 12px 28px rgba(0,0,0,.55);
-}
-
-body.home .elementor-widget-icon-box .elementor-icon-box-title,
-body.home .elementor-widget-image-box .elementor-image-box-title{
-  font-size: clamp(18px, 2.2vw, 22px) !important;
-  margin: 6px 0 0 !important;
-  text-align: center;
-}
-body.home .elementor-widget-icon-box .elementor-icon-box-description,
-body.home .elementor-widget-image-box .elementor-image-box-description{
-  font-size: clamp(14px, 1.7vw, 16px) !important;
-  line-height: 1.6 !important;
-  color: var(--muted) !important;
-  max-width: 34ch;
-  margin: 8px auto 0;
-  text-align: center;
-}
-
-/* Section 3: centered system panel + balanced columns
-   IMPORTANT: We DO NOT rely on Elementor manual classes; we key off icon-list presence. */
-body.home .elementor-section:has(.elementor-widget-icon-list) > .elementor-container{
-  position: relative;
-  max-width: min(100%, 1040px) !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-
-  display: grid;
-  grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
-  align-items: center;
-
-  gap: clamp(16px, 3vw, 28px);
-  padding: clamp(24px, 4vw, 56px) !important;
-}
-
-/* glass panel behind */
-body.home .elementor-section:has(.elementor-widget-icon-list) > .elementor-container::before{
-  content:"";
-  position:absolute;
-  inset: 0;
-  background: rgba(6,14,18,.55);
-  border: 1px solid rgba(0,240,255,.18);
-  border-radius: 26px;
-  box-shadow: 0 18px 44px rgba(0,0,0,.60), 0 0 28px rgba(0,240,255,.10);
-  backdrop-filter: blur(16px) saturate(1.15);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
-  z-index: -1;
-}
-
-/* left column readability */
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-widget-text-editor{
-  max-width: 58ch;
-  line-height: 1.7 !important;
-  color: var(--muted) !important;
-}
-
-/* stop global forced centering from breaking panel hierarchy */
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-heading-title{
-  text-align: left !important;
-}
-
-/* chips column */
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-widget-icon-list{
-  max-width: 460px;
-  margin-left: auto;
-}
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-icon-list-items{
-  display: grid !important;
-  gap: 10px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-icon-list-item,
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-icon-list-item a{
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  padding: 14px 18px !important;
-  border-radius: 20px !important;
-  background: rgba(6,14,18,.70) !important;
-  border: 1px solid rgba(0,240,255,.20) !important;
-  box-shadow: 0 10px 26px rgba(0,0,0,.55), 0 0 18px rgba(0,240,255,.12) !important;
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-icon-list-item:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 18px 34px rgba(0,0,0,.6), 0 0 24px rgba(0,240,255,.2);
-}
-body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-icon-list-text{
-  font-size: clamp(14px, 1.8vw, 16px) !important;
-  letter-spacing: .02em;
-}
-
-/* Scroll reveal (JS toggles .is-visible) */
-.kr-reveal{
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity .6s ease, transform .6s ease;
-}
-.kr-reveal.is-visible{
-  opacity: 1;
-  transform: translateY(0);
-}
-@media (prefers-reduced-motion: reduce){
-  .kr-reveal{ opacity:1; transform:none; }
-}
-
-/* responsive */
-@media (max-width: 1024px){
-  body.home .elementor-section:has(.elementor-widget-icon-box, .elementor-widget-image-box) > .elementor-container{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+/* ---------- transition overlay ---------- */
+function ensureTransitionOverlay() {
+  let overlay = document.querySelector(".page-transition");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.className = "page-transition";
+    document.body.appendChild(overlay);
   }
-  body.home .elementor-section:has(.elementor-widget-icon-list) > .elementor-container{
-    display: block;
-    padding: clamp(18px, 4vw, 40px) !important;
-  }
-  body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-heading-title{
-    text-align: center !important;
-  }
-  body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-widget-text-editor{
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-  }
-  body.home .elementor-section:has(.elementor-widget-icon-list) .elementor-widget-icon-list{
-    margin: 18px auto 0;
-  }
+  document.body.classList.add("pt-ready");
+  return overlay;
 }
 
-@media (max-width: 768px){
-  .cursor-glow, .cursor-particle, .orbit-layer{ display:none !important; }
-  body.fx-cursor, body.fx-cursor a{ cursor:auto !important; }
+function runPageTransition() {
+  if (reducedMotion()) return Promise.resolve();
+  ensureTransitionOverlay();
+  document.body.classList.add("pt-leaving");
+  return new Promise((resolve) => setTimeout(resolve, 260));
+}
 
-  .ast-primary-header-bar .main-header-menu,
-  .ast-above-header-bar .main-header-menu,
-  .ast-primary-header-bar ul.ast-nav-menu,
-  .ast-above-header-bar ul.ast-nav-menu,
-  .ast-primary-header-bar ul.menu,
-  .ast-above-header-bar ul.menu{
-    gap: 16px !important;
-    padding: 12px 14px !important;
+/* ---------- cursor FX ---------- */
+function initCursorFX() {
+  if (isMobileish() || reducedMotion()) return;
+
+  document.body.classList.add("fx-cursor");
+
+  let glow = document.querySelector(".cursor-glow");
+  if (!glow) {
+    glow = document.createElement("div");
+    glow.className = "cursor-glow";
+    document.body.appendChild(glow);
   }
 
-  .ast-primary-header-bar .main-header-menu > li > a,
-  .ast-above-header-bar .main-header-menu > li > a,
-  .ast-primary-header-bar ul.ast-nav-menu > li > a,
-  .ast-above-header-bar ul.ast-nav-menu > li > a,
-  .ast-primary-header-bar ul.menu > li > a,
-  .ast-above-header-bar ul.menu > li > a{
-    font-size: 18px !important;
-    padding: 8px 10px !important;
+  if (!glow.querySelector(".cursor-tail")) {
+    const tail = document.createElement("div");
+    tail.className = "cursor-tail";
+    glow.appendChild(tail);
   }
+
+  let x = window.innerWidth / 2, y = window.innerHeight / 2;
+  let tx = x, ty = y;
+  let lastX = x, lastY = y;
+
+  let lastParticleTime = 0;
+  const particleEveryMs = 30;
+
+  window.addEventListener("mousemove", (e) => {
+    tx = e.clientX;
+    ty = e.clientY;
+  }, { passive: true });
+
+  (function loop() {
+    x += (tx - x) * 0.22;
+    y += (ty - y) * 0.22;
+
+    const vx = x - lastX;
+    const vy = y - lastY;
+    lastX = x;
+    lastY = y;
+
+    const speed = Math.min(28, Math.hypot(vx, vy) * 2.2);
+    const angle = Math.atan2(vy, vx) * (180 / Math.PI) + 180;
+
+    glow.style.left = x + "px";
+    glow.style.top = y + "px";
+    glow.style.setProperty("--tailLen", (20 + speed * 1.7).toFixed(1) + "px");
+    glow.style.setProperty("--tailRot", angle.toFixed(1) + "deg");
+    glow.style.setProperty("--tailOpacity", (0.22 + speed / 45).toFixed(2));
+
+    const now = performance.now();
+    if (now - lastParticleTime > particleEveryMs && speed > 1) {
+      lastParticleTime = now;
+
+      const p = document.createElement("div");
+      p.className = "cursor-particle";
+      p.style.left = x + "px";
+      p.style.top = y + "px";
+      p.style.transform = `translate(-50%, -50%) scale(${Math.min(1.2, 0.6 + speed / 26).toFixed(2)})`;
+
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 650);
+    }
+
+    requestAnimationFrame(loop);
+  })();
 }
 
-@media (max-width: 640px){
-  body.home .elementor-section:has(.elementor-widget-icon-box, .elementor-widget-image-box) > .elementor-container{
-    grid-template-columns: 1fr;
-  }
-  body.home .elementor-widget-icon-box .elementor-widget-container,
-  body.home .elementor-widget-image-box .elementor-widget-container{
-    padding: 18px !important;
-  }
-}
+/* ---------- audio + orbit + nav ---------- */
+function initSoundAndNavFX() {
+  const audio = { ctx: null, unlocked: false };
 
-/* ======================================================
-   BUTTON GLOW (ELEMENTOR/ASTRA/WP)
-====================================================== */
-.elementor-button,
-.elementor-button-link,
-.wp-block-button__link,
-.ast-button,
-button,
-input[type="button"],
-input[type="submit"],
-input[type="reset"]{
-  background: linear-gradient(135deg, #18f2ff, #5ff6ff) !important;
-  color: #001016 !important;
-  box-shadow:
-    0 0 0 1px rgba(0,240,255,.25),
-    0 0 22px rgba(0,240,255,.45) !important;
-  border: 0 !important;
-  transition: all .25s ease !important;
-}
+  const createCtx = () => {
+    if (!audio.ctx) audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return audio.ctx;
+  };
 
-.elementor-button:hover,
-.elementor-button-link:hover,
-.wp-block-button__link:hover,
-.ast-button:hover,
-button:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover{
-  box-shadow:
-    0 0 0 1px rgba(0,240,255,.55),
-    0 0 34px rgba(0,240,255,.45) !important;
-  transform: translateY(-2px);
-}
+  const unlockAudio = async () => {
+    const ctx = createCtx();
+    if (ctx.state === "suspended") {
+      try { await ctx.resume(); } catch (e) {}
+    }
+    audio.unlocked = (ctx.state === "running");
+    return audio.unlocked;
+  };
 
-/* ======================================================
-   G KEY NEON GLOW
-====================================================== */
-body.g-glow::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99999990;
-  background:
-    radial-gradient(600px 420px at 50% 50%,
-      rgba(0,240,255,.25) 0%,
-      rgba(0,200,255,.16) 35%,
-      rgba(0,0,0,0) 70%
+  const magicalClick = () => {
+    if (!audio.unlocked || !audio.ctx) return;
+
+    const ctx = audio.ctx;
+    const now = ctx.currentTime;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.24, now + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+    gain.connect(ctx.destination);
+
+    [640, 820, 980, 1240].forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = i % 2 ? "triangle" : "sine";
+      osc.frequency.setValueAtTime(f, now + i * 0.028);
+      osc.frequency.exponentialRampToValueAtTime(f * 1.16, now + i * 0.028 + 0.07);
+      osc.connect(gain);
+      osc.start(now + i * 0.028);
+      osc.stop(now + i * 0.028 + 0.12);
+    });
+
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(1600, now);
+    gain2.gain.setValueAtTime(0.0001, now);
+    gain2.gain.exponentialRampToValueAtTime(0.055, now + 0.02);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+    osc2.connect(gain2).connect(ctx.destination);
+    osc2.start(now);
+    osc2.stop(now + 0.14);
+  };
+
+  const ensureOrbitLayer = (el) => {
+    if (!el || el.querySelector(".orbit-layer")) return;
+
+    const layer = document.createElement("div");
+    layer.className = "orbit-layer";
+
+    for (let i = 0; i < 3; i++) {
+      const spin = document.createElement("div");
+      spin.className = "orbit-spin";
+
+      const dot = document.createElement("div");
+      dot.className = "orbit-dot";
+
+      spin.appendChild(dot);
+      layer.appendChild(spin);
+    }
+
+    el.appendChild(layer);
+  };
+
+  const isInternalNavLink = (a, e) => {
+    if (!a || !a.href) return false;
+    if (a.target === "_blank") return false;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+
+    const url = new URL(a.href, window.location.href);
+    if (url.origin !== window.location.origin) return false;
+
+    // ignore hash jumps on same page
+    const samePath = (url.pathname === window.location.pathname);
+    if (samePath && url.hash) return false;
+
+    // ignore downloads / mailto / tel
+    if (a.hasAttribute("download")) return false;
+    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+
+    return true;
+  };
+
+  const isMenuLink = (el) => (
+    !!el.closest(".main-header-menu, .ast-nav-menu, .main-header-bar-navigation")
+  );
+
+  // Prepare overlay early
+  ensureTransitionOverlay();
+
+  // Unlock audio on FIRST pointer interaction
+  const unlockOnce = async () => {
+    if (audio.unlocked) return;
+    createCtx();
+    await unlockAudio();
+    window.removeEventListener("pointerdown", unlockOnce, { capture: true });
+  };
+  window.addEventListener("pointerdown", unlockOnce, { capture: true, passive: true });
+
+  // Inject orbit layers once (footer socials)
+  document.querySelectorAll("#colophon a.ast-builder-social-element")
+    .forEach((a) => ensureOrbitLayer(a));
+
+  // SINGLE delegated handler for internal navigation clicks
+  document.addEventListener("click", async (e) => {
+    const a = e.target.closest("a");
+    if (!a) return;
+
+    if (isInternalNavLink(a, e)) {
+      if (audio.unlocked) magicalClick();
+      e.preventDefault();
+      await runPageTransition();
+      window.location.href = a.href;
+    }
+  }, { passive: false });
+
+  // Hover sound on menu items (once unlocked)
+  document.addEventListener("mouseenter", (e) => {
+    const a = e.target.closest(".main-header-menu a, .ast-nav-menu a, .main-header-bar-navigation a");
+    if (!a) return;
+    if (audio.unlocked && isMenuLink(a)) magicalClick();
+  }, { capture: true, passive: true });
+
+  // Hover sound on socials (once unlocked)
+  document.addEventListener("mouseenter", (e) => {
+    const a = e.target.closest("#colophon a.ast-builder-social-element");
+    if (!a) return;
+    if (audio.unlocked) magicalClick();
+  }, { capture: true, passive: true });
+
+  // Hover sound on premium cards + chips (once unlocked)
+  document.addEventListener("mouseenter", (e) => {
+    const card = e.target.closest(
+      ".elementor-widget-icon-box .elementor-widget-container, " +
+      ".elementor-widget-image-box .elementor-widget-container, " +
+      ".elementor-icon-list-item"
     );
-  animation: gGlowPulse .6s ease-out forwards;
-  mix-blend-mode: screen;
-}
-@keyframes gGlowPulse{
-  0%{ opacity: 0; }
-  25%{ opacity: 1; }
-  100%{ opacity: 0; }
+    if (!card) return;
+    if (audio.unlocked) magicalClick();
+  }, { capture: true, passive: true });
+
+  // G key glow pulse
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() !== "g") return;
+
+    const tag = e.target.tagName;
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(tag) || e.target.isContentEditable) return;
+
+    document.body.classList.remove("g-glow");
+    void document.body.offsetWidth; // restart animation
+    document.body.classList.add("g-glow");
+
+    window.clearTimeout(window.__krisiGlowTimer);
+    window.__krisiGlowTimer = window.setTimeout(() => {
+      document.body.classList.remove("g-glow");
+    }, 700);
+  });
 }
 
-/* ======================================================
-   FOOTER: KILL ALL SOCIAL BORDERS (Astra/Elementor)
-====================================================== */
-#colophon a.ast-builder-social-element,
-#colophon a.ast-builder-social-element:focus,
-#colophon a.ast-builder-social-element:focus-visible,
-#colophon .ast-builder-social-element,
-#colophon .ast-footer-social-wrap a,
-#colophon .ast-footer-social-1-wrap a{
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  background-clip: padding-box !important;
-}
-
-#colophon .ast-builder-social-element:not(a)::before,
-#colophon .ast-builder-social-element:not(a)::after{
-  content: none !important;
-  display: none !important;
-}
-
-#colophon a.ast-builder-social-element span,
-#colophon a.ast-builder-social-element i,
-#colophon a.ast-builder-social-element .ast-social-icon,
-#colophon a.ast-builder-social-element .ast-social-icon-label{
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-}
-
-#colophon a.ast-builder-social-element svg,
-#colophon a.ast-builder-social-element svg *{
-  stroke: none !important;
-  outline: none !important;
-  filter: none !important;
-}
-
-#colophon a.ast-builder-social-element:focus-visible{
-  box-shadow: none !important;
-}
-
-/* ======================================================
-   TYPOGRAPHY — SAFE DEFAULTS
-   IMPORTANT: Do NOT force-center all headings globally.
-   We keep your soft white + subtle glow, but avoid layout side effects.
-====================================================== */
-.elementor-widget-text-editor,
-.elementor-widget-text-editor *,
-.elementor-heading-title,
-.elementor-heading-title *{
-  color: #F2F5F8 !important;
-  text-shadow: 0 0 40px rgba(0,240,255,.12);
-  letter-spacing: .02em;
-}
-
-/* only center headings where it makes sense (hero already centered via home rules) */
-.elementor-heading-title{
-  text-align: inherit !important;
-}
-
-.cyan-highlight,
-.cyan-highlight *{
-  color: #F2F5F8 !important;
-  text-shadow:
-    0 0 6px rgba(0,240,255,.35),
-    0 0 14px rgba(0,240,255,.15);
-}
-
-/* ======================================================
-   ELEMENTOR EDITOR UI SAFETY PATCH (no frontend impact)
-====================================================== */
-body.elementor-editor-active .glass,
-body.elementor-editor-active .glass *,
-body.elementor-editor-active .kr-card,
-body.elementor-editor-active .kr-card *,
-body.elementor-editor-active .kr-star,
-body.elementor-editor-active .kr-star *,
-body.elementor-editor-active .cyber,
-body.elementor-editor-active .cyber *{
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  filter: none !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-  mix-blend-mode: normal !important;
-  animation: none !important;
-  transition: none !important;
-}
-
-body.elementor-editor-active #elementor-panel,
-body.elementor-editor-active #elementor-panel *,
-body.elementor-editor-active .elementor-panel,
-body.elementor-editor-active .elementor-panel *,
-body.elementor-editor-active .elementor-editor-modal,
-body.elementor-editor-active .elementor-editor-modal *,
-body.elementor-editor-active .dialog-widget-content,
-body.elementor-editor-active .dialog-widget-content *,
-body.elementor-editor-active .elementor-overlay,
-body.elementor-editor-active .elementor-overlay *{
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  filter: none !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-  mix-blend-mode: normal !important;
-}
+/* ---------- BOOT ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  initCursorFX();
+  initSoundAndNavFX();
+  initScrollReveal();
+});
