@@ -574,16 +574,24 @@ body.home .elementor-section:has(.elementor-icon-list-item)
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   align-items: center;
+  /* fix: center the full panel and keep it from drifting on wide screens */
+  max-width: min(100%, 980px);
+  margin-left: auto !important;
+  margin-right: auto !important;
+  gap: clamp(18px, 4vw, 34px);
 }
 
 body.home .elementor-section:has(.elementor-icon-list-item) .elementor-widget-text-editor{
   line-height: 1.7 !important;
   color: var(--muted) !important;
+  /* fix: reduce tall vertical rhythm inside the panel */
+  margin-bottom: clamp(10px, 2vw, 16px) !important;
 }
 
 body.home .elementor-icon-list-items{
   display: grid !important;
-  gap: 12px !important;
+  /* fix: tighten chip stack spacing for a denser interface feel */
+  gap: clamp(8px, 1.6vw, 12px) !important;
   margin: 0 !important;
   padding: 0 !important;
 }
