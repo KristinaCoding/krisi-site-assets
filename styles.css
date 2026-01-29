@@ -557,8 +557,10 @@ body.home .elementor-section:first-of-type .elementor-widget-heading{
 body.home .elementor-section:has(.elementor-widget-icon-box, .elementor-widget-image-box)
   > .elementor-container{
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-auto-rows: 1fr;
   align-items: stretch;
+  width: 100%;
 }
 
 /* card internals consistency (won’t kill your effects) */
@@ -572,6 +574,16 @@ body.home .elementor-widget-image-box .elementor-widget-container{
   justify-content: flex-start;
 }
 
+body.home .elementor-widget-icon-box .elementor-icon-box-wrapper,
+body.home .elementor-widget-image-box .elementor-image-box-wrapper{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
 /* image crop consistency for image-box dragons */
 body.home .elementor-widget-image-box .elementor-image-box-img{
   width: 100%;
@@ -579,6 +591,7 @@ body.home .elementor-widget-image-box .elementor-image-box-img{
   margin-bottom: 12px !important;
 }
 body.home .elementor-widget-image-box .elementor-image-box-img img{
+  display: block;
   width: 100% !important;
   height: 92px !important;
   object-fit: cover !important;
@@ -610,6 +623,8 @@ body.home .elementor-section:has(.elementor-widget-icon-list) > .elementor-conta
   max-width: min(100%, 1040px) !important;
   margin-left: auto !important;
   margin-right: auto !important;
+  width: 100%;
+  box-sizing: border-box;
 
   display: grid;
   grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);

@@ -298,6 +298,9 @@ function initSoundAndNavFX() {
 
 /* ---------- BOOT ---------- */
 document.addEventListener("DOMContentLoaded", () => {
+  if (window.__krisiFxInitialized) return;
+  window.__krisiFxInitialized = true;
+
   initCursorFX();
   initSoundAndNavFX();
   initScrollReveal();
