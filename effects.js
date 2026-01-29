@@ -14,6 +14,31 @@ function reducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+/* ---------- scroll reveal ---------- */
+function initScrollReveal() {
+  if (reducedMotion()) return;
+
+  const targets = document.querySelectorAll(
+    ".elementor-section, .e-con, .elementor-widget-icon-box .elementor-widget-container, " +
+    ".elementor-widget-image-box .elementor-widget-container, .elementor-icon-list-item"
+  );
+
+  if (!targets.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: "0px 0px -10% 0px", threshold: 0.15 });
+
+  targets.forEach((el) => {
+    el.classList.add("kr-reveal");
+    observer.observe(el);
+  });
+}
+
 /* ---------- transition overlay ---------- */
 function ensureTransitionOverlay() {
   let overlay = document.querySelector(".page-transition");
@@ -232,6 +257,17 @@ function initSoundAndNavFX() {
     if (audio.unlocked) magicalClick();
   }, { capture: true, passive: true });
 
+  // Optional: hover sound on premium cards + chips (only if already unlocked)
+  document.addEventListener("mouseenter", (e) => {
+    const card = e.target.closest(
+      ".elementor-widget-icon-box .elementor-widget-container, " +
+      ".elementor-widget-image-box .elementor-widget-container, " +
+      ".elementor-icon-list-item"
+    );
+    if (!card) return;
+    if (audio.unlocked) magicalClick();
+  }, { capture: true, passive: true });
+
   // G key glow pulse
   document.addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() !== "g") return;
@@ -251,4 +287,5 @@ function initSoundAndNavFX() {
 document.addEventListener("DOMContentLoaded", () => {
   initCursorFX();
   initSoundAndNavFX();
+  initScrollReveal();
 });
