@@ -1,3 +1,16 @@
+/* ===== GLOBAL CANVAS BACKGROUND (kills peach) ===== */
+html, body{
+  background:#000 !important;
+  color:#F2F5F8;
+}
+
+/* Common WP wrappers that can still hold a background */
+#page, .site, .site-content,
+.wp-site-blocks, .wp-site-blocks > * ,
+main, .content-area{
+  background: transparent !important;
+}
+
 :root{
   --bg:#000;
   --text:#E6F1FF;
