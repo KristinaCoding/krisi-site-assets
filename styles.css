@@ -618,3 +618,37 @@ body.g-glow::after{
     0 0 6px rgba(0,240,255,.35),
     0 0 14px rgba(0,240,255,.15);
 }
+
+/* ======================================================
+   BUTTON GLOW (ELEMENTOR/ASTRA/WP)
+====================================================== */
+.elementor-button,
+.elementor-button-link,
+.wp-block-button__link,
+.ast-button,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"]{
+  background: linear-gradient(135deg, #18f2ff, #5ff6ff) !important;
+  color: #001016 !important;
+  box-shadow:
+    0 0 0 1px rgba(0,240,255,.25),
+    0 0 22px rgba(0,240,255,.45) !important;
+  border: 0 !important;
+  transition: all .25s ease !important;
+}
+
+.elementor-button:hover,
+.elementor-button-link:hover,
+.wp-block-button__link:hover,
+.ast-button:hover,
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover{
+  box-shadow:
+    0 0 0 1px rgba(0,240,255,.55),
+    0 0 34px rgba(0,240,255,.45) !important;
+  transform: translateY(-2px);
+}
