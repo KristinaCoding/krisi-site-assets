@@ -605,6 +605,11 @@ body.g-glow::after{
 .elementor-heading-title,
 .elementor-heading-title *{
   color: #F2F5F8 !important;   /* soft white */
+  text-shadow: 0 0 40px rgba(0,240,255,.12);
+  letter-spacing: .02em;
+}
+.elementor-heading-title{
+  text-align: center !important;
 }
 .cyan-highlight,
 .cyan-highlight *{
