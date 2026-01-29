@@ -488,6 +488,16 @@ hr,
 .dragon-card .dragon-card-title{
   transform: translateZ(18px);
 }
+.dragon-card .elementor-text-editor,
+.dragon-card .elementor-text-editor *{
+  font-size: 15px;
+  line-height: 1.6;
+  text-shadow: none;
+}
+.dragon-card p{
+  font-size: 15px;
+  line-height: 1.6;
+}
 .system-card,
 .icon-card{
   transform-style: flat;
