@@ -250,7 +250,7 @@
 
   /* FOOTER ORBIT */
   function initFooterOrbit(){
-    const links = document.querySelectorAll(".site-footer a");
+    const links = document.querySelectorAll(".site-footer a, .elementor-social-icon");
     links.forEach(a => {
       if (a.dataset.orbitBound === "1") return;
       a.dataset.orbitBound = "1";
