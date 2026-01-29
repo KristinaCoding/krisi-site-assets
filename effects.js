@@ -1,304 +1,212 @@
-/* ======================================================
-   KRISI.SITE — FX PACK (CLEAN FINAL v2)
-   - Cursor tail + particles
-   - Cyan fade transition on internal navigation
-   - One consistent magical sound everywhere
-   - Social orbit particles
-   - Scroll reveal
-   - FIX: no double-binding clicks
-====================================================== */
+(function () {
 
-function isMobileish() {
-  return window.matchMedia("(max-width: 768px)").matches || ("ontouchstart" in window);
-}
+  function whenReady(fn) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fn);
+    } else fn();
+  }
 
-function reducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-/* ---------- scroll reveal ---------- */
-function initScrollReveal() {
-  if (reducedMotion()) return;
-
-  const targets = document.querySelectorAll(
-    ".elementor-section, .e-con, " +
-    ".elementor-widget-icon-box .elementor-widget-container, " +
-    ".elementor-widget-image-box .elementor-widget-container, " +
-    ".elementor-icon-list-item"
-  );
-
-  if (!targets.length) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add("is-visible");
-      observer.unobserve(entry.target);
+  /* PAGE FADE (demo-safe) */
+  function initPageFades(){
+    document.body.classList.add("is-loaded");
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest("a");
+      if (!a) return;
+      const href = a.getAttribute("href") || "";
+      if (!href || href.startsWith("#") || a.target === "_blank") return;
+      // In CodePen we don't navigate away; keep this disabled.
     });
-  }, { rootMargin: "0px 0px -10% 0px", threshold: 0.15 });
-
-  targets.forEach((el) => {
-    el.classList.add("kr-reveal");
-    observer.observe(el);
-  });
-}
-
-/* ---------- transition overlay ---------- */
-function ensureTransitionOverlay() {
-  let overlay = document.querySelector(".page-transition");
-  if (!overlay) {
-    overlay = document.createElement("div");
-    overlay.className = "page-transition";
-    document.body.appendChild(overlay);
-  }
-  document.body.classList.add("pt-ready");
-  return overlay;
-}
-
-function runPageTransition() {
-  if (reducedMotion()) return Promise.resolve();
-  ensureTransitionOverlay();
-  document.body.classList.add("pt-leaving");
-  return new Promise((resolve) => setTimeout(resolve, 260));
-}
-
-/* ---------- cursor FX ---------- */
-function initCursorFX() {
-  if (isMobileish() || reducedMotion()) return;
-
-  document.body.classList.add("fx-cursor");
-
-  let glow = document.querySelector(".cursor-glow");
-  if (!glow) {
-    glow = document.createElement("div");
-    glow.className = "cursor-glow";
-    document.body.appendChild(glow);
   }
 
-  if (!glow.querySelector(".cursor-tail")) {
-    const tail = document.createElement("div");
-    tail.className = "cursor-tail";
-    glow.appendChild(tail);
-  }
+  /* SECTION ACCENT SHIFT */
+  function initSectionAccentShift() {
+    const sections = document.querySelectorAll(".accent-cyan, .accent-purple, .accent-green");
+    if (!sections.length) return;
 
-  let x = window.innerWidth / 2, y = window.innerHeight / 2;
-  let tx = x, ty = y;
-  let lastX = x, lastY = y;
-
-  let lastParticleTime = 0;
-  const particleEveryMs = 30;
-
-  window.addEventListener("mousemove", (e) => {
-    tx = e.clientX;
-    ty = e.clientY;
-  }, { passive: true });
-
-  (function loop() {
-    x += (tx - x) * 0.22;
-    y += (ty - y) * 0.22;
-
-    const vx = x - lastX;
-    const vy = y - lastY;
-    lastX = x;
-    lastY = y;
-
-    const speed = Math.min(28, Math.hypot(vx, vy) * 2.2);
-    const angle = Math.atan2(vy, vx) * (180 / Math.PI) + 180;
-
-    glow.style.left = x + "px";
-    glow.style.top = y + "px";
-    glow.style.setProperty("--tailLen", (20 + speed * 1.7).toFixed(1) + "px");
-    glow.style.setProperty("--tailRot", angle.toFixed(1) + "deg");
-    glow.style.setProperty("--tailOpacity", (0.22 + speed / 45).toFixed(2));
-
-    const now = performance.now();
-    if (now - lastParticleTime > particleEveryMs && speed > 1) {
-      lastParticleTime = now;
-
-      const p = document.createElement("div");
-      p.className = "cursor-particle";
-      p.style.left = x + "px";
-      p.style.top = y + "px";
-      p.style.transform = `translate(-50%, -50%) scale(${Math.min(1.2, 0.6 + speed / 26).toFixed(2)})`;
-
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 650);
+    function setAccentFrom(el){
+      const cs = getComputedStyle(el);
+      const a = cs.getPropertyValue("--accent").trim();
+      const a2 = cs.getPropertyValue("--accent2").trim();
+      if (a) document.documentElement.style.setProperty("--accent", a);
+      if (a2) document.documentElement.style.setProperty("--accent2", a2);
     }
 
-    requestAnimationFrame(loop);
-  })();
-}
-
-/* ---------- audio + orbit + nav ---------- */
-function initSoundAndNavFX() {
-  const audio = { ctx: null, unlocked: false };
-
-  const createCtx = () => {
-    if (!audio.ctx) audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    return audio.ctx;
-  };
-
-  const unlockAudio = async () => {
-    const ctx = createCtx();
-    if (ctx.state === "suspended") {
-      try { await ctx.resume(); } catch (e) {}
-    }
-    audio.unlocked = (ctx.state === "running");
-    return audio.unlocked;
-  };
-
-  const magicalClick = () => {
-    if (!audio.unlocked || !audio.ctx) return;
-
-    const ctx = audio.ctx;
-    const now = ctx.currentTime;
-
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.24, now + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
-    gain.connect(ctx.destination);
-
-    [640, 820, 980, 1240].forEach((f, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = i % 2 ? "triangle" : "sine";
-      osc.frequency.setValueAtTime(f, now + i * 0.028);
-      osc.frequency.exponentialRampToValueAtTime(f * 1.16, now + i * 0.028 + 0.07);
-      osc.connect(gain);
-      osc.start(now + i * 0.028);
-      osc.stop(now + i * 0.028 + 0.12);
+    sections.forEach(sec => {
+      sec.addEventListener("mouseenter", () => setAccentFrom(sec));
+      sec.addEventListener("focusin", () => setAccentFrom(sec));
     });
 
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.type = "sine";
-    osc2.frequency.setValueAtTime(1600, now);
-    gain2.gain.setValueAtTime(0.0001, now);
-    gain2.gain.exponentialRampToValueAtTime(0.055, now + 0.02);
-    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-    osc2.connect(gain2).connect(ctx.destination);
-    osc2.start(now);
-    osc2.stop(now + 0.14);
-  };
+    let ticking = false;
+    function onScroll(){
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        let best = null, bestDist = Infinity;
+        const mid = window.innerHeight * 0.45;
 
-  const ensureOrbitLayer = (el) => {
-    if (!el || el.querySelector(".orbit-layer")) return;
-
-    const layer = document.createElement("div");
-    layer.className = "orbit-layer";
-
-    for (let i = 0; i < 3; i++) {
-      const spin = document.createElement("div");
-      spin.className = "orbit-spin";
-
-      const dot = document.createElement("div");
-      dot.className = "orbit-dot";
-
-      spin.appendChild(dot);
-      layer.appendChild(spin);
+        sections.forEach(sec => {
+          const r = sec.getBoundingClientRect();
+          const center = r.top + r.height / 2;
+          const dist = Math.abs(center - mid);
+          if (dist < bestDist){ bestDist = dist; best = sec; }
+        });
+        if (best) setAccentFrom(best);
+      });
     }
 
-    el.appendChild(layer);
-  };
+    window.addEventListener("scroll", onScroll, { passive:true });
+    onScroll();
+  }
 
-  const isInternalNavLink = (a, e) => {
-    if (!a || !a.href) return false;
-    if (a.target === "_blank") return false;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+  /* MAGNETIC PULL */
+  function initMagneticPull(){
+    const items = document.querySelectorAll(".demo-nav a, .magnetic");
+    items.forEach(el => {
+      if (el.dataset.magnetBound === "1") return;
+      el.dataset.magnetBound = "1";
+      const strength = el.classList.contains("magnetic") ? 10 : 6;
 
-    const url = new URL(a.href, window.location.href);
-    if (url.origin !== window.location.origin) return false;
+      el.addEventListener("mousemove", (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = `translate(${x * strength}px, ${y * (strength * 0.85)}px) scale(1.04)`;
+      });
+      el.addEventListener("mouseleave", () => el.style.transform = "");
+    });
+  }
 
-    // ignore hash jumps on same page
-    const samePath = (url.pathname === window.location.pathname);
-    if (samePath && url.hash) return false;
+  /* CURSOR GLOW + PARTICLES */
+  function initCursorFX(){
+    if (window.matchMedia("(max-width: 768px)").matches) return;
 
-    // ignore downloads / mailto / tel
-    if (a.hasAttribute("download")) return false;
-    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
-
-    return true;
-  };
-
-  const isMenuLink = (el) => (
-    !!el.closest(".main-header-menu, .ast-nav-menu, .main-header-bar-navigation")
-  );
-
-  // Prepare overlay early
-  ensureTransitionOverlay();
-
-  // Unlock audio on FIRST pointer interaction
-  const unlockOnce = async () => {
-    if (audio.unlocked) return;
-    createCtx();
-    await unlockAudio();
-    window.removeEventListener("pointerdown", unlockOnce, { capture: true });
-  };
-  window.addEventListener("pointerdown", unlockOnce, { capture: true, passive: true });
-
-  // Inject orbit layers once (footer socials)
-  document.querySelectorAll("#colophon a.ast-builder-social-element")
-    .forEach((a) => ensureOrbitLayer(a));
-
-  // SINGLE delegated handler for internal navigation clicks
-  document.addEventListener("click", async (e) => {
-    const a = e.target.closest("a");
-    if (!a) return;
-
-    if (isInternalNavLink(a, e)) {
-      if (audio.unlocked) magicalClick();
-      e.preventDefault();
-      await runPageTransition();
-      window.location.href = a.href;
+    let glow = document.querySelector(".cursor-glow");
+    if (!glow){
+      glow = document.createElement("div");
+      glow.className = "cursor-glow";
+      document.body.appendChild(glow);
     }
-  }, { passive: false });
 
-  // Hover sound on menu items (once unlocked)
-  document.addEventListener("mouseenter", (e) => {
-    const a = e.target.closest(".main-header-menu a, .ast-nav-menu a, .main-header-bar-navigation a");
-    if (!a) return;
-    if (audio.unlocked && isMenuLink(a)) magicalClick();
-  }, { capture: true, passive: true });
+    let x = innerWidth/2, y = innerHeight/2, tx = x, ty = y;
 
-  // Hover sound on socials (once unlocked)
-  document.addEventListener("mouseenter", (e) => {
-    const a = e.target.closest("#colophon a.ast-builder-social-element");
-    if (!a) return;
-    if (audio.unlocked) magicalClick();
-  }, { capture: true, passive: true });
+    let lastParticleTime = 0;
+    const particleEveryMs = 22;
 
-  // Hover sound on premium cards + chips (once unlocked)
-  document.addEventListener("mouseenter", (e) => {
-    const card = e.target.closest(
-      ".elementor-widget-icon-box .elementor-widget-container, " +
-      ".elementor-widget-image-box .elementor-widget-container, " +
-      ".elementor-icon-list-item"
-    );
-    if (!card) return;
-    if (audio.unlocked) magicalClick();
-  }, { capture: true, passive: true });
+    window.addEventListener("mousemove", (e) => {
+      tx = e.clientX; ty = e.clientY;
 
-  // G key glow pulse
-  document.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() !== "g") return;
+      const now = performance.now();
+      if (now - lastParticleTime > particleEveryMs){
+        lastParticleTime = now;
+        const p = document.createElement("div");
+        p.className = "cursor-particle";
+        p.style.left = tx + "px";
+        p.style.top = ty + "px";
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 650);
+      }
+    }, { passive:true });
 
-    const tag = e.target.tagName;
-    if (["INPUT", "TEXTAREA", "SELECT"].includes(tag) || e.target.isContentEditable) return;
+    (function loop(){
+      x += (tx - x) * 0.22;
+      y += (ty - y) * 0.22;
+      glow.style.left = x + "px";
+      glow.style.top = y + "px";
+      requestAnimationFrame(loop);
+    })();
+  }
 
-    document.body.classList.remove("g-glow");
-    void document.body.offsetWidth; // restart animation
-    document.body.classList.add("g-glow");
+  /* HEADING PROXIMITY GLOW */
+  function initHeadingProximityGlow(){
+    if (window.matchMedia("(max-width: 768px)").matches) return;
 
-    window.clearTimeout(window.__krisiGlowTimer);
-    window.__krisiGlowTimer = window.setTimeout(() => {
-      document.body.classList.remove("g-glow");
-    }, 700);
+    const headings = Array.from(document.querySelectorAll("h1, h2, h3, .elementor-heading-title"))
+      .filter(h => h.textContent && h.textContent.trim().length);
+
+    headings.forEach(h => h.classList.add("proximity-heading"));
+    if (!headings.length) return;
+
+    let mx = innerWidth/2, my = innerHeight/2;
+    let ticking = false;
+
+    window.addEventListener("mousemove", (e) => {
+      mx = e.clientX; my = e.clientY;
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        ticking = false;
+
+        for (const h of headings){
+          const r = h.getBoundingClientRect();
+          if (r.bottom < 0 || r.top > innerHeight) continue;
+
+          const cx = r.left + r.width/2;
+          const cy = r.top + r.height/2;
+          const dx = mx - cx;
+          const dy = my - cy;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+
+          const radius = Math.max(220, Math.min(520, r.width * 0.9));
+          const p = Math.max(0, Math.min(1, 1 - dist / radius));
+          h.style.setProperty("--p", p.toFixed(3));
+        }
+      });
+    }, { passive:true });
+  }
+
+  /* CLICK GLOW EXPLOSION */
+  function initCardClickBurst(){
+    document.addEventListener("click", (e) => {
+      const card = e.target.closest(".glass-card");
+      if (!card) return;
+
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+
+      const burst = document.createElement("span");
+      burst.className = "click-burst";
+      burst.style.left = x + "px";
+      burst.style.top = y + "px";
+      card.appendChild(burst);
+
+      setTimeout(() => burst.remove(), 700);
+    });
+  }
+
+  /* FOOTER ORBIT */
+  function initFooterOrbit(){
+    const links = document.querySelectorAll(".site-footer a");
+    links.forEach(a => {
+      if (a.dataset.orbitBound === "1") return;
+      a.dataset.orbitBound = "1";
+
+      const layer = document.createElement("span");
+      layer.className = "orbit-layer";
+
+      for (let i = 0; i < 3; i++){
+        const spin = document.createElement("span");
+        spin.className = "orbit-spin";
+        const dot = document.createElement("span");
+        dot.className = "orbit-dot";
+        spin.appendChild(dot);
+        layer.appendChild(spin);
+      }
+      a.appendChild(layer);
+    });
+  }
+
+  whenReady(() => {
+    initPageFades();
+    initSectionAccentShift();
+    initMagneticPull();
+    initCursorFX();
+    initHeadingProximityGlow();
+    initCardClickBurst();
+    initFooterOrbit();
+    // wave-glow is CSS-only: add class "wave-glow" to anything
   });
-}
 
-/* ---------- BOOT ---------- */
-document.addEventListener("DOMContentLoaded", () => {
-  initCursorFX();
-  initSoundAndNavFX();
-  initScrollReveal();
-});
+})();
