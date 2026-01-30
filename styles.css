@@ -508,6 +508,10 @@ hr,
   font-size: 12px !important;
   font-weight: 600 !important;
 }
+.wpforms-container .wpforms-field-label{
+  display: block;
+  margin-bottom: 8px;
+}
 .wpforms-container .wpforms-description,
 .wpforms-container .wpforms-field-description{
   color: rgba(230, 241, 255, 0.7) !important;
@@ -523,6 +527,8 @@ hr,
   border: 1px solid rgba(0, 240, 255, 0.2) !important;
   color: #F5FBFF !important;
   padding: 16px 18px !important;
+  line-height: 1.4;
+  min-height: 52px;
   border-radius: 14px !important;
   box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.1), 0 14px 28px rgba(0, 0, 0, 0.4);
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
@@ -549,22 +555,26 @@ hr,
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
 }
+.wpforms-container .wpforms-field-select::after{
+  content: "";
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid rgba(0, 240, 255, 0.95);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
 .wpforms-container .wpforms-field select{
   appearance: none;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none;
-  background-image:
-    linear-gradient(135deg, transparent 55%, rgba(0, 240, 255, 0.95) 55%),
-    linear-gradient(225deg, transparent 55%, rgba(0, 240, 255, 0.95) 55%),
-    linear-gradient(to right, rgba(0, 240, 255, 0.25), rgba(0, 240, 255, 0.25));
-  background-position:
-    calc(100% - 22px) calc(50% + 2px),
-    calc(100% - 16px) calc(50% + 2px),
-    calc(100% - 44px) 50%;
-  background-size: 8px 8px, 8px 8px, 1px 22px;
-  background-repeat: no-repeat;
-  padding-right: 56px !important;
+  background-image: none;
+  padding-right: 52px !important;
 }
 .wpforms-container .wpforms-field select option{
   color: #F5FBFF;
