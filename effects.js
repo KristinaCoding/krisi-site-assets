@@ -183,6 +183,9 @@
     function closestCard(el){
       return el.closest(".elementor-column, .e-con, .elementor-widget-wrap, .elementor-widget-container, section");
     }
+    function closestPathCard(el){
+      return el.closest(".elementor-column, .e-con") || el.closest(".elementor-widget-wrap, .elementor-widget-container, section");
+    }
 
     const dragonNames = ["aether drake", "verdant wyrm", "cryo seraph", "pyro titan"];
     const glassCardHeadings = ["build a system", "learn the system", "explore the lab"];
@@ -211,8 +214,8 @@
       }
 
       if (glassCardHeadings.includes(text)){
-        const card = closestCard(h);
-        if (card) card.classList.add("glass-card");
+        const card = closestPathCard(h);
+        if (card) card.classList.add("glass-card", "path-card");
       }
     });
 
