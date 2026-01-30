@@ -192,6 +192,8 @@
     const serviceGlassHeadings = [
       "clarity",
       "architecture",
+      "experience",
+      "growth",
       "cognition",
       "automation",
       "clarity & direction",
