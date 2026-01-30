@@ -545,8 +545,6 @@ hr,
 }
 .wpforms-container .wpforms-field select{
   appearance: none;
-  background-color: #fff !important;
-  color: #0b1116 !important;
   background-image:
     linear-gradient(135deg, transparent 55%, rgba(0, 240, 255, 0.95) 55%),
     linear-gradient(225deg, transparent 55%, rgba(0, 240, 255, 0.95) 55%),
@@ -560,7 +558,8 @@ hr,
   padding-right: 56px !important;
 }
 .wpforms-container .wpforms-field select option{
-  color: #0b1116;
+  color: #F5FBFF;
+  background-color: #0b1116;
 }
 .wpforms-container .wpforms-field select option[disabled],
 .wpforms-container .wpforms-field select option[value=""]{
