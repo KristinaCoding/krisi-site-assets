@@ -610,6 +610,21 @@ hr,
 .wpforms-container .wpforms-field-hp{
   display: none !important;
 }
+.wpforms-confirmation-container,
+.wpforms-confirmation-container-full{
+  max-width: 1040px;
+  margin: 24px auto 0;
+}
+.wpforms-confirmation{
+  background: linear-gradient(140deg, rgba(8, 16, 22, 0.92), rgba(4, 10, 14, 0.82));
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  color: #E6F1FF;
+  border-radius: 18px;
+  padding: 18px 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 36px rgba(0, 240, 255, 0.18);
+  text-align: center;
+  font-size: 16px;
+}
 
 /* =========================================
    CARD SYSTEMS
