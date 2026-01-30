@@ -189,6 +189,14 @@
 
     const dragonNames = ["aether drake", "verdant wyrm", "cryo seraph", "pyro titan"];
     const glassCardHeadings = ["build a system", "learn the system", "explore the lab"];
+    const serviceGlassHeadings = [
+      "clarity",
+      "architecture",
+      "cognition",
+      "automation",
+      "clarity & direction",
+      "understanding & mastery"
+    ];
     headings.forEach(h => {
       const text = (h.textContent || "").trim().toLowerCase();
       if (!text) return;
@@ -216,6 +224,11 @@
       if (glassCardHeadings.includes(text)){
         const card = closestPathCard(h);
         if (card) card.classList.add("glass-card", "path-card");
+      }
+
+      if (serviceGlassHeadings.includes(text)){
+        const card = closestCard(h);
+        if (card) card.classList.add("glass-card", "service-glass-card");
       }
     });
 
