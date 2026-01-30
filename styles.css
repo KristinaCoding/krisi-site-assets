@@ -546,6 +546,8 @@ hr,
   box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.4), 0 0 24px rgba(0, 240, 255, 0.4);
   transform: translateY(-1px);
 }
+
+/* ====== UPDATED SELECT/DROPDOWN STYLES (FIXED) ====== */
 .wpforms-container .wpforms-field-select{
   position: relative;
   border-radius: 14px;
@@ -556,65 +558,81 @@ hr,
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   overflow: hidden;
 }
+
+/* Arrow INSIDE the field; does not block clicks */
 .wpforms-container .wpforms-field-select::after{
   content: "";
   position: absolute;
   right: 18px;
   top: 50%;
+  transform: translateY(-50%);
   width: 0;
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 8px solid rgba(230,241,255,.9);
-  transform: translateY(-50%);
   pointer-events: none;
+  z-index: 3;
 }
+
+/* Keep the select label OUTSIDE (above the box) */
 .wpforms-container .wpforms-field-select .wpforms-field-label{
   position: static !important;
   margin: 0 0 8px !important;
   color: #E6F1FF !important;
-  z-index: 2;
-  text-transform: none;
-  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-.wpforms-container .wpforms-field select{
+
+/* Make the select control fully clickable and vertically centered */
+.wpforms-container .wpforms-field-select select{
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+
   width: 100% !important;
+  min-height: 64px !important;
+
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
   background-image: none !important;
-  padding: 16px 52px 16px 18px !important;
-  min-height: 64px !important;
-  line-height: 1.2 !important;
+
+  padding: 18px 52px 18px 18px !important; /* room for arrow */
   color: #F5FBFF !important;
+  line-height: 1.2 !important;
+
+  position: relative;
+  z-index: 2;
   cursor: pointer;
 }
-.wpforms-container .wpforms-field select option{
-  color: #E6F1FF;
-  background-color: #0A1218;
-}
-.wpforms-container .wpforms-field select option:checked{
-  background-color: rgba(0, 240, 255, 0.2);
-  color: #F2F5F8;
-}
-.wpforms-container .wpforms-field select option:hover,
-.wpforms-container .wpforms-field select option:focus{
-  background-color: rgba(0, 240, 255, 0.25);
-  color: #F2F5F8;
-}
-.wpforms-container .wpforms-field select option[disabled],
-.wpforms-container .wpforms-field select option[value=""]{
-  color: rgba(230, 241, 255, 0.55);
-}
-.wpforms-container .wpforms-field select:invalid{
+
+/* Placeholder/empty option styling */
+.wpforms-container .wpforms-field-select select:invalid{
   color: rgba(230, 241, 255, 0.55) !important;
 }
-.wpforms-container .wpforms-field-select select{
-  /* Native dropdown styling is limited by browser/OS; these rules are best-effort. */
+
+/* Best-effort native dropdown menu styling (browser/OS limited) */
+.wpforms-container .wpforms-field-select select option{
+  background-color: #0A1218;
+  color: #E6F1FF;
 }
+.wpforms-container .wpforms-field-select select option:checked{
+  background-color: rgba(0, 240, 255, 0.22);
+  color: #F2F5F8;
+}
+.wpforms-container .wpforms-field-select select option[disabled],
+.wpforms-container .wpforms-field-select select option[value=""]{
+  color: rgba(230, 241, 255, 0.55);
+}
+
+/* Wrapper glow on focus (feels consistent with other fields) */
+.wpforms-container .wpforms-field-select:focus-within{
+  border-color: rgba(0, 240, 255, 0.65) !important;
+  box-shadow: 0 0 0 1px rgba(0,240,255,.35), 0 0 24px rgba(0,240,255,.35) !important;
+}
+/* ====== END UPDATED SELECT/DROPDOWN STYLES ====== */
+
 .wpforms-container .wpforms-field-row{
   gap: 18px;
 }
