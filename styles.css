@@ -557,6 +557,16 @@ hr,
   background-repeat: no-repeat;
   padding-right: 56px !important;
 }
+.wpforms-container .wpforms-field select option{
+  color: #0b1116;
+}
+.wpforms-container .wpforms-field select option[disabled],
+.wpforms-container .wpforms-field select option[value=""]{
+  color: rgba(230, 241, 255, 0.7);
+}
+.wpforms-container .wpforms-field select:invalid{
+  color: rgba(230, 241, 255, 0.7) !important;
+}
 .wpforms-container .wpforms-field-row{
   gap: 18px;
 }
