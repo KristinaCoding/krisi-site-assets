@@ -577,14 +577,14 @@ hr,
   -moz-appearance: none;
 
   width: 100% !important;
-  min-height: 48px !important;
+  min-height: 40px !important;
 
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
   background-image: none !important;
 
-  padding: 12px 16px !important;
+  padding: 8px 14px !important;
   color: #F5FBFF !important;
   line-height: 1.2 !important;
 
