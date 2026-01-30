@@ -475,7 +475,7 @@ hr,
    WPFORMS LUXURY GLASS FORM
    ========================================= */
 .wpforms-container{
-  max-width: 860px;
+  max-width: 1040px;
   margin: 0 auto;
 }
 .wpforms-container .wpforms-form{
@@ -540,22 +540,48 @@ hr,
   box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.4), 0 0 24px rgba(0, 240, 255, 0.4);
   transform: translateY(-1px);
 }
+.wpforms-container .wpforms-field-select{
+  position: relative;
+}
 .wpforms-container .wpforms-field select{
   appearance: none;
   background-image:
-    linear-gradient(45deg, transparent 50%, rgba(0, 240, 255, 0.9) 50%),
-    linear-gradient(135deg, rgba(0, 240, 255, 0.9) 50%, transparent 50%),
     linear-gradient(to right, rgba(0, 240, 255, 0.25), rgba(0, 240, 255, 0.25));
   background-position:
-    calc(100% - 26px) calc(50% - 3px),
-    calc(100% - 20px) calc(50% - 3px),
     calc(100% - 44px) 50%;
-  background-size: 6px 6px, 6px 6px, 1px 22px;
+  background-size: 1px 22px;
   background-repeat: no-repeat;
   padding-right: 56px !important;
 }
+.wpforms-container .wpforms-field-select::after{
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 10px solid rgba(0, 240, 255, 0.95);
+  transform: translateY(-30%);
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.65));
+}
 .wpforms-container .wpforms-field-row{
   gap: 18px;
+}
+.wpforms-container .wpforms-field-name .wpforms-field-row{
+  display: flex;
+  gap: 18px;
+}
+.wpforms-container .wpforms-field-name .wpforms-field-row .wpforms-field-row-block{
+  flex: 1 1 0;
+  min-width: 0;
+}
+@media (max-width: 720px){
+  .wpforms-container .wpforms-field-name .wpforms-field-row{
+    flex-direction: column;
+  }
 }
 .wpforms-container .wpforms-required-label{
   color: var(--cyan);
