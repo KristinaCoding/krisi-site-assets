@@ -545,6 +545,8 @@ hr,
 }
 .wpforms-container .wpforms-field select{
   appearance: none;
+  background-color: #fff !important;
+  color: #0b1116 !important;
   background-image:
     linear-gradient(135deg, transparent 55%, rgba(0, 240, 255, 0.95) 55%),
     linear-gradient(225deg, transparent 55%, rgba(0, 240, 255, 0.95) 55%),
