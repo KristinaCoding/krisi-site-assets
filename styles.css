@@ -565,7 +565,7 @@ hr,
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-top: 8px solid #000;
+  border-top: 8px solid rgba(230,241,255,.9);
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -574,7 +574,7 @@ hr,
   top: 8px;
   left: 18px;
   margin: 0;
-  color: #000 !important;
+  color: #E6F1FF !important;
   z-index: 2;
   text-transform: none;
   letter-spacing: 0.2px;
@@ -586,7 +586,7 @@ hr,
   box-shadow: none;
   background-image: none;
   padding: 28px 52px 14px 18px !important;
-  color: #000 !important;
+  color: #F5FBFF !important;
 }
 .wpforms-container .wpforms-field select option{
   color: #000;
@@ -597,7 +597,7 @@ hr,
   color: rgba(0, 0, 0, 0.6);
 }
 .wpforms-container .wpforms-field select:invalid{
-  color: rgba(0, 0, 0, 0.6) !important;
+  color: rgba(230, 241, 255, 0.55) !important;
 }
 .wpforms-container .wpforms-field-row{
   gap: 18px;
