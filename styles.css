@@ -132,6 +132,29 @@ a::selection, a *::selection{ text-decoration:none !important; }
   transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
   min-height: 160px;
 }
+.glass-card.path-card{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  padding:28px 26px;
+  min-height: 320px;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+.glass-card.path-card .elementor-widget-button{
+  margin-top:auto;
+}
+.glass-card.path-card .elementor-heading-title,
+.glass-card.path-card h2,
+.glass-card.path-card h3{
+  font-size:32px;
+  letter-spacing:.4px;
+}
+.glass-card.path-card .elementor-text-editor,
+.glass-card.path-card p{
+  color: rgba(230,241,255,.8);
+  line-height: 1.7;
+}
 .glass-card:hover{
   transform:translateY(-8px) scale(1.02);
   border-color: rgba(0,240,255,.55);
