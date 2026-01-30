@@ -559,22 +559,6 @@ hr,
   overflow: hidden;
 }
 
-/* Arrow INSIDE the field; does not block clicks */
-.wpforms-container .wpforms-field-select::after{
-  content: "";
-  position: absolute;
-  right: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid rgba(230,241,255,.9);
-  pointer-events: none;
-  z-index: 3;
-}
-
 /* Keep the select label OUTSIDE (above the box) */
 .wpforms-container .wpforms-field-select .wpforms-field-label{
   position: static !important;
@@ -593,14 +577,14 @@ hr,
   -moz-appearance: none;
 
   width: 100% !important;
-  min-height: 64px !important;
+  min-height: 48px !important;
 
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
   background-image: none !important;
 
-  padding: 18px 52px 18px 18px !important; /* room for arrow */
+  padding: 12px 16px !important;
   color: #F5FBFF !important;
   line-height: 1.2 !important;
 
@@ -626,7 +610,7 @@ hr,
 /* Selected item (some browsers respect it) */
 .wpforms-container .wpforms-field-select select option:checked{
   background: rgba(0,240,255,.22) !important;
-  color: #F2F5F8 !important;
+  color: #000000 !important;
 }
 
 /* Wrapper glow on focus (feels consistent with other fields) */
