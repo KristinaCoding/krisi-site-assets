@@ -570,10 +570,8 @@ hr,
   pointer-events: none;
 }
 .wpforms-container .wpforms-field-select .wpforms-field-label{
-  position: absolute;
-  top: 8px;
-  left: 18px;
-  margin: 0;
+  position: static !important;
+  margin: 0 0 8px !important;
   color: #E6F1FF !important;
   z-index: 2;
   text-transform: none;
@@ -581,25 +579,41 @@ hr,
 }
 .wpforms-container .wpforms-field select{
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100% !important;
   background: transparent !important;
   border: 0 !important;
-  box-shadow: none;
-  background-image: none;
-  padding: 22px 52px 18px 18px !important;  /* was 28px 52px 14px 18px */
-  min-height: 64px !important;              /* gives room for the value */
-  line-height: 1.2 !important;              /* prevents clipping */
+  box-shadow: none !important;
+  background-image: none !important;
+  padding: 16px 52px 16px 18px !important;
+  min-height: 64px !important;
+  line-height: 1.2 !important;
   color: #F5FBFF !important;
+  cursor: pointer;
 }
 .wpforms-container .wpforms-field select option{
-  color: #000;
-  background-color: #fff;
+  color: #E6F1FF;
+  background-color: #0A1218;
+}
+.wpforms-container .wpforms-field select option:checked{
+  background-color: rgba(0, 240, 255, 0.2);
+  color: #F2F5F8;
+}
+.wpforms-container .wpforms-field select option:hover,
+.wpforms-container .wpforms-field select option:focus{
+  background-color: rgba(0, 240, 255, 0.25);
+  color: #F2F5F8;
 }
 .wpforms-container .wpforms-field select option[disabled],
 .wpforms-container .wpforms-field select option[value=""]{
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(230, 241, 255, 0.55);
 }
 .wpforms-container .wpforms-field select:invalid{
   color: rgba(230, 241, 255, 0.55) !important;
+}
+.wpforms-container .wpforms-field-select select{
+  /* Native dropdown styling is limited by browser/OS; these rules are best-effort. */
 }
 .wpforms-container .wpforms-field-row{
   gap: 18px;
