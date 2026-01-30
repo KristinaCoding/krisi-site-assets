@@ -626,7 +626,7 @@ hr,
 /* Selected item (some browsers respect it) */
 .wpforms-container .wpforms-field-select select option:checked{
   background: rgba(0,240,255,.22) !important;
-  color: #F2F5F8 !important;
+  color: #000000 !important;
 }
 
 /* Wrapper glow on focus (feels consistent with other fields) */
