@@ -585,7 +585,9 @@ hr,
   border: 0 !important;
   box-shadow: none;
   background-image: none;
-  padding: 28px 52px 14px 18px !important;
+  padding: 22px 52px 18px 18px !important;  /* was 28px 52px 14px 18px */
+  min-height: 64px !important;              /* gives room for the value */
+  line-height: 1.2 !important;              /* prevents clipping */
   color: #F5FBFF !important;
 }
 .wpforms-container .wpforms-field select option{
