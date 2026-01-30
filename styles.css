@@ -538,6 +538,7 @@ hr,
   box-shadow: 0 20px 46px rgba(0,0,0,.6), 0 0 32px rgba(0,240,255,.22);
   backdrop-filter: blur(24px) saturate(165%);
   -webkit-backdrop-filter: blur(24px) saturate(165%);
+  margin: 12px 14px;
 }
 .service-glass-card:hover{
   border-color: rgba(0,240,255,.55);
